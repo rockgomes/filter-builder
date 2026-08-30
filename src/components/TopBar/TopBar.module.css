@@ -90,6 +90,8 @@
 .rightGroup {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  row-gap: 4px;
   gap: 8px;
 }
 
