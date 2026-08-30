@@ -1,7 +1,8 @@
 .scrollContainer {
   flex: 1;
+  min-height: 150px;
   overflow: auto;
-  background: #fff;
+  background: var(--surface-panel);
   position: relative;
 }
 
@@ -98,7 +99,7 @@
   width: max-content;
   min-width: 100%;
   border-bottom: 1px solid var(--border-row);
-  background: #fff;
+  background: var(--surface-panel);
 }
 
 .zebra {

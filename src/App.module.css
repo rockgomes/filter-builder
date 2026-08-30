@@ -4,6 +4,6 @@
   flex-direction: column;
   font-size: 13px;
   background: var(--surface-page);
-  overflow: hidden;
+  overflow-y: auto;
 }
 
