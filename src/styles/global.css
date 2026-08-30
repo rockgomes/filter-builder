@@ -1,0 +1,36 @@
+@import './tokens.css';
+
+html, body, #root { height: 100%; }
+html, body { margin: 0; padding: 0; background: var(--surface-page); }
+body { min-height: 100dvh; }
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-ui);
+  color: var(--ink-1);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); }
+a:hover { color: var(--accent-hover); }
+input, select, button { font-family: inherit; }
+
+input:focus, select:focus { outline: 2px solid var(--accent-border); outline-offset: -1px; }
+:focus-visible { outline: 2px solid var(--accent-border); outline-offset: 1px; }
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+::-webkit-scrollbar { height: 10px; width: 10px; }
+::-webkit-scrollbar-thumb { background: #ccd4e2; border-radius: 5px; border: 2px solid #fff; }
+::-webkit-scrollbar-corner { background: #fff; }
