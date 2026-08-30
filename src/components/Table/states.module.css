@@ -1,0 +1,135 @@
+/* Shared by LoadingState, ErrorState and EmptyState — the three non-ready
+ * table renderings. */
+
+.centered {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.tile {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.errorTile {
+  border-radius: 12px;
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+.emptyTile {
+  border-radius: 12px;
+  border: 1px dashed var(--border-dashed);
+  color: var(--ink-5);
+  font-weight: 400;
+}
+
+.heading {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.detail {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-5);
+}
+
+.retryBtn {
+  margin-top: 4px;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 7px;
+  border: none;
+  background: var(--dark-bg);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clearFiltersBtn {
+  margin-top: 4px;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 7px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* --- Empty (no matching rows), rendered inline within the scrolling table --- */
+
+.emptyWrap {
+  position: sticky;
+  left: 0;
+  padding: 80px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* --- Loading skeleton --- */
+
+.loadingRoot {
+  position: absolute;
+  inset: 0;
+}
+
+.headerStub {
+  height: 34px;
+  background: var(--surface-header);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.skeletonRow {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border-row);
+}
+
+.bar {
+  height: 11px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border-row) 0px, var(--surface-header) 200px, var(--border-row) 400px);
+  background-size: 800px 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+
+/* The global prefers-reduced-motion rule already freezes the animation; a
+ * frozen mid-gradient frame reads as a broken loading state, so give the bar
+ * a flat tint instead when motion is reduced. */
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    background: var(--border-row);
+  }
+}
+
+.loadingCaption {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-5);
+}

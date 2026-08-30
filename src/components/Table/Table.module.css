@@ -1,9 +1,21 @@
-.scrollContainer {
+/* .tableArea is the sole `position: relative` ancestor for everything that
+ * floats over the table — BulkBar, Toast, LoadingState, ErrorState. It does
+ * not itself scroll; only .scrollContainer (absolutely positioned to fill it)
+ * does. This keeps the floating pieces pinned to the visible table area
+ * instead of drifting with scroll position, including when an ancestor
+ * (.app) is itself scrollable. */
+.tableArea {
   flex: 1;
   min-height: 150px;
+  position: relative;
+  background: var(--surface-panel);
+}
+
+.scrollContainer {
+  position: absolute;
+  inset: 0;
   overflow: auto;
   background: var(--surface-panel);
-  position: relative;
 }
 
 /* --- Header row --- */

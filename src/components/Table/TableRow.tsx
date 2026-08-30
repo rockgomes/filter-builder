@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import type { Action } from '../../state/reducer'
 import type { Company, ColumnDef } from '../../domain/types'
 import { TableCell } from './TableCell'
 import styles from './Table.module.css'
@@ -9,12 +10,24 @@ export interface TableRowProps {
   nameWidth: number
   rowHeight: number
   /** Index within the full sorted array (not the rendered window) — zebra
-   *  stripes must key off this or they flicker while scrolling. */
+   *  stripes must key off this or they flicker while scrolling, and it is
+   *  also the index the selection reducer needs for shift-click ranges. */
   absIndex: number
   selected: boolean
+  sortedIds: number[]
+  dispatch: (action: Action) => void
 }
 
-function TableRowImpl({ company, columns, nameWidth, rowHeight, absIndex, selected }: TableRowProps) {
+function TableRowImpl({
+  company,
+  columns,
+  nameWidth,
+  rowHeight,
+  absIndex,
+  selected,
+  sortedIds,
+  dispatch,
+}: TableRowProps) {
   const className = [styles.row, absIndex % 2 === 1 && styles.zebra, selected && styles.selected]
     .filter(Boolean)
     .join(' ')
@@ -22,13 +35,24 @@ function TableRowImpl({ company, columns, nameWidth, rowHeight, absIndex, select
   return (
     <div role="row" className={className} style={{ height: rowHeight }}>
       <div className={styles.checkboxCell}>
-        {/* Selection wiring arrives in Task 10 — this checkbox is display-only for now. */}
         <input
           type="checkbox"
           className={styles.checkbox}
           checked={selected}
-          readOnly
-          disabled
+          // The dispatch happens on click (not change) so we can read
+          // event.shiftKey for range selection; onChange is a no-op just to
+          // satisfy React's controlled-input contract.
+          onChange={() => {}}
+          onClick={(event) => {
+            event.stopPropagation()
+            dispatch({
+              type: 'selection/toggleRow',
+              id: company.id,
+              index: absIndex,
+              shiftKey: event.shiftKey,
+              sortedIds,
+            })
+          }}
           aria-label={`Select ${company.name}`}
         />
       </div>

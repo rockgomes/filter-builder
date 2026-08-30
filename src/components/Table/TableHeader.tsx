@@ -9,6 +9,10 @@ export interface TableHeaderProps {
   columns: ColumnDef[]
   dispatch: (action: Action) => void
   startResize: (key: string, event: MouseEvent<HTMLDivElement>) => void
+  /** True only when every row in the currently rendered window is selected. */
+  headerChecked: boolean
+  /** Toggles selection of just the rendered window — never the full matching set. */
+  onToggleWindow: () => void
 }
 
 interface SortDisplay {
@@ -29,7 +33,15 @@ function sortDisplay(sorts: SortSpec[], key: CompanyKey): SortDisplay {
   }
 }
 
-export function TableHeader({ sorts, nameWidth, columns, dispatch, startResize }: TableHeaderProps) {
+export function TableHeader({
+  sorts,
+  nameWidth,
+  columns,
+  dispatch,
+  startResize,
+  headerChecked,
+  onToggleWindow,
+}: TableHeaderProps) {
   const nameSort = sortDisplay(sorts, 'name')
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>, key: string) => {
@@ -45,9 +57,17 @@ export function TableHeader({ sorts, nameWidth, columns, dispatch, startResize }
 
   return (
     <div role="row" className={styles.headerRow}>
-      <div role="columnheader" className={styles.checkboxHeaderCell} aria-label="Select rows">
-        {/* Selection wiring arrives in Task 10 — this checkbox is display-only for now. */}
-        <input type="checkbox" className={styles.checkbox} checked={false} readOnly disabled title="Select rows on screen" />
+      <div role="columnheader" className={styles.checkboxHeaderCell}>
+        {/* Selects only the rows currently rendered in the virtual window — a
+         *  distinct promise from "Select all N matching" in the bulk bar, so
+         *  the accessible name must say so explicitly. */}
+        <input
+          type="checkbox"
+          className={styles.checkbox}
+          checked={headerChecked}
+          onChange={onToggleWindow}
+          aria-label="Select the rows on screen"
+        />
       </div>
 
       <div

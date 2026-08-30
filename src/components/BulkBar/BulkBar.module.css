@@ -1,0 +1,100 @@
+.bar {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark-bg);
+  color: #fff;
+  border-radius: 11px;
+  box-shadow: var(--shadow-bulk);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  z-index: 50;
+  white-space: nowrap;
+  /* At narrow viewports the pill's natural (nowrap) width can exceed the
+   * table area itself. Cap it to the containing block and let it wrap onto
+   * a second line rather than overflow — an overflowing absolutely
+   * positioned pill would otherwise drag the whole app into unwanted
+   * horizontal scroll and put "Export CSV" / the clear button out of reach.
+   * `width: max-content` (rather than the default `auto`) matters here:
+   * with `left: 50%` and an auto width, the CSS shrink-to-fit algorithm
+   * computes available width as containingBlockWidth - left — i.e. only
+   * half the container — which wraps this row far earlier than it needs
+   * to. Giving it an explicit intrinsic width sidesteps that entirely. */
+  width: max-content;
+  max-width: calc(100% - 24px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.selectAllBtn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--dark-border);
+  background: none;
+  color: var(--accent-on-dark);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.selectAllBtn:hover {
+  background: var(--dark-hover);
+}
+
+.divider {
+  width: 1px;
+  height: 16px;
+  background: var(--dark-border);
+}
+
+.crmBtn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.exportBtn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--dark-border);
+  background: none;
+  color: var(--border-strong);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.exportBtn:hover {
+  background: var(--dark-hover);
+}
+
+.clearBtn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: var(--ink-5);
+  cursor: pointer;
+  font-size: 15px;
+  border-radius: 5px;
+}
+
+.clearBtn:hover {
+  color: #fff;
+}
