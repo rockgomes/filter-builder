@@ -31,8 +31,17 @@ The case-study intro section (screen 1 of the handoff — eyebrow, H1, TRY 01-04
 
 Consequences, accepted deliberately:
 
-- The app is the entire page. Root fills `100dvh` with no surrounding page chrome, so it works
-  both as a standalone URL and embedded in an iframe from the portfolio.
+- The app is the entire page, with no surrounding page chrome.
+- **Embedding is a supported option**, though not necessarily used at launch. The mechanism:
+  the app root is `height: 100%` of its container, and the standalone `index.html` sets
+  `html, body, #root { height: 100% }` against a `100dvh` body. Embedded in a fixed-height
+  iframe it fills the frame; standalone it fills the viewport. One code path, no build flag,
+  no embed-specific mode.
+- Two constraints follow, recorded so they are not broken later:
+  1. Netlify must **not** send `X-Frame-Options: DENY`. If a CSP is added, it must use
+     `frame-ancestors` with the portfolio origin allowed, not a blanket denial.
+  2. No component may assume the viewport equals the app height. Table viewport height comes
+     from a `ResizeObserver` on the scroll container, never from `window.innerHeight`.
 - The `#demo` anchor and the "Jump to the demo" CTA are dropped.
 - The TRY 01-04 cards were the only in-product signposts telling a visitor which edge cases to
   try. Without them the demo does not explain itself; the portfolio copy carries that job.
