@@ -1,0 +1,134 @@
+.topBar {
+  min-height: 52px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  gap: 12px;
+  padding: 6px 16px;
+  background: var(--surface-panel);
+  border-bottom: 1px solid var(--border-strong);
+  position: relative;
+  z-index: 60;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 6px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+
+.wordmark {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-strong);
+  flex: none;
+}
+
+.viewsWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.chipActive {
+  background: var(--accent-tint-1);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+}
+
+.chipInactive {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-strong);
+  color: var(--ink-3);
+}
+
+.chipWarn {
+  color: var(--amber-mark);
+  font-weight: 700;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.rightGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.demoLabel {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.breakBtn {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-panel);
+  color: var(--ink-4);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex: none;
+}
+
+.breakBtn:hover {
+  color: var(--error-text);
+  border-color: var(--error-border);
+}
+
+.columnsBtn {
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 7px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-panel);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink-1);
+  white-space: nowrap;
+  flex: none;
+}
