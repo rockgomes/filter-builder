@@ -8,7 +8,7 @@
 .groupBox {
   /* Shrink with the row instead of forcing its unwrapped content width —
      the nested condition rows wrap internally once this can narrow. */
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
   border: 1px solid var(--border-strong);
   border-left: 3px solid var(--accent-border);
@@ -42,7 +42,7 @@
   padding: 0 9px;
   border-radius: 5px;
   border: 1px solid var(--accent-border-soft);
-  background: #fff;
+  background: var(--surface-panel);
   color: var(--accent);
   font-family: var(--font-mono);
   font-size: 10.5px;

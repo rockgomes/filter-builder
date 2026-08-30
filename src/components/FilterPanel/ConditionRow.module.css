@@ -18,12 +18,14 @@
      actually engages at narrow viewports instead of silently overflowing
      the app's overflow:hidden shell. */
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
 }
 
 .boxSmall {
   padding: 3px 5px;
-  border-radius: var(--radius-control);
+  /* Fieldset.dc.html:198 — the nested condition box uses 7px, not the 6px
+     control radius token. */
+  border-radius: 7px;
   gap: 4px;
 }
 
@@ -44,9 +46,17 @@
 }
 
 .select {
-  background: #fff;
+  background: var(--surface-panel);
   padding: 0 4px;
   color: var(--ink-4);
+}
+
+/* Fieldset.dc.html:198 — nested/small selects use a tighter radius, padding
+   and font size than the root box's controls. */
+.select.controlSmall {
+  border-radius: 5px;
+  padding: 0 3px;
+  font-size: 12px;
 }
 
 .controlSmall {
@@ -135,7 +145,7 @@
 }
 
 .chipInactive {
-  background: #fff;
+  background: var(--surface-panel);
   border: 1px solid var(--border-strong);
   color: var(--ink-4);
   font-weight: 400;
