@@ -41,8 +41,9 @@ describe('tree editing', () => {
   })
 
   it('detaches the active view when a condition is patched', () => {
-    const id = ready().tree.children[0].id
-    const s = reducer(ready(), { type: 'tree/patchCondition', id, patch: { value: 'Fintech' } })
+    const base = ready()
+    const id = base.tree.children[0].id
+    const s = reducer(base, { type: 'tree/patchCondition', id, patch: { value: 'Fintech' } })
     expect(s.activeView).toBeNull()
     expect((s.tree.children[0] as Cond).value).toBe('Fintech')
   })
