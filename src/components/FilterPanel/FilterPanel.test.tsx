@@ -1,0 +1,164 @@
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
+import { FilterPanel } from './FilterPanel'
+import { initialState } from '../../state/reducer'
+import { generateCompanies } from '../../domain/generateCompanies'
+import { filterRows } from '../../domain/filter'
+import { emptyTree } from '../../domain/tree'
+import type { AppState } from '../../state/reducer'
+import type { Group } from '../../domain/types'
+
+const NOW = Date.UTC(2026, 0, 1)
+const ROWS = generateCompanies(200, { now: NOW })
+
+const setup = (over: Partial<AppState> = {}) => {
+  const dispatch = vi.fn()
+  const state = { ...initialState(), phase: 'ready' as const, ...over }
+  render(
+    <FilterPanel
+      state={state}
+      dispatch={dispatch}
+      rows={ROWS}
+      filtered={filterRows(ROWS, state.tree, NOW)}
+      ignoredCount={0}
+      now={NOW}
+    />
+  )
+  return { dispatch, state, user: userEvent.setup() }
+}
+
+const legacyTree = (): Group => ({
+  kind: 'group', id: 'root', op: 'AND',
+  children: [{ kind: 'cond', id: 'c_dead', field: 'region_emea', op: 'is', value: 'EMEA', value2: '' }],
+})
+
+describe('FilterPanel structure', () => {
+  it('labels the first row Where and later rows with the joiner', () => {
+    setup()
+    expect(screen.getByText('Where')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'AND' }).length).toBeGreaterThan(0)
+  })
+
+  it('adds a condition to the root', async () => {
+    const { dispatch, user } = setup()
+    await user.click(screen.getByRole('button', { name: /\+ Condition/ }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'tree/addCondition', parentId: 'root' })
+  })
+
+  it('adds a group', async () => {
+    const { dispatch, user } = setup()
+    await user.click(screen.getByRole('button', { name: /\+ Group/ }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'tree/addGroup' })
+  })
+
+  it('flips the root operator from the joiner pill', async () => {
+    const { dispatch, user } = setup()
+    await user.click(screen.getAllByRole('button', { name: 'AND' })[0])
+    expect(dispatch).toHaveBeenCalledWith({ type: 'tree/toggleOp', id: 'root' })
+  })
+})
+
+describe('FilterPanel condition editing', () => {
+  it('resets the operator and re-seeds the value when the field changes', async () => {
+    const { dispatch, state, user } = setup()
+    const id = state.tree.children[0].id
+    await user.selectOptions(screen.getAllByLabelText('Field')[0], 'headcount')
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'tree/patchCondition', id,
+      patch: { field: 'headcount', op: 'gt', value: '', value2: '' },
+    })
+  })
+
+  it('wraps the value into an array when switching to is any of', async () => {
+    const { dispatch, state, user } = setup()
+    const id = state.tree.children[0].id
+    await user.selectOptions(screen.getAllByLabelText('Operator')[0], 'any_of')
+    expect(dispatch).toHaveBeenCalledWith({
+      type: 'tree/patchCondition', id, patch: { op: 'any_of', value: ['SaaS'] },
+    })
+  })
+
+  it('shows a second input only for a between range', () => {
+    const tree: Group = {
+      kind: 'group', id: 'root', op: 'AND',
+      children: [{ kind: 'cond', id: 'c1', field: 'headcount', op: 'between', value: '10', value2: '20' }],
+    }
+    setup({ tree })
+    expect(screen.getAllByLabelText(/Value/)).toHaveLength(2)
+  })
+
+  it('shows no value input for a boolean condition', () => {
+    const tree: Group = {
+      kind: 'group', id: 'root', op: 'AND',
+      children: [{ kind: 'cond', id: 'c1', field: 'inCRM', op: 'true', value: '', value2: '' }],
+    }
+    setup({ tree })
+    expect(screen.queryByLabelText(/Value/)).toBeNull()
+  })
+
+  it('reports a live hit count for each condition', () => {
+    const tree: Group = {
+      kind: 'group', id: 'root', op: 'AND',
+      children: [{ kind: 'cond', id: 'c1', field: 'industry', op: 'is', value: 'SaaS', value2: '' }],
+    }
+    setup({ tree })
+    expect(screen.getByText(/\d+ hits?$/)).toBeInTheDocument()
+  })
+
+  it('removes a condition', async () => {
+    const { dispatch, state, user } = setup()
+    const id = state.tree.children[0].id
+    await user.click(screen.getAllByRole('button', { name: /Remove condition/ })[0])
+    expect(dispatch).toHaveBeenCalledWith({ type: 'tree/removeNode', id })
+  })
+})
+
+describe('FilterPanel deleted field', () => {
+  it('explains that the condition is ignored rather than failing', () => {
+    setup({ tree: legacyTree() })
+    expect(screen.getByText(/field was deleted — condition ignored/)).toBeInTheDocument()
+  })
+
+  it('offers no operator or value editor for a dead condition', () => {
+    setup({ tree: legacyTree() })
+    expect(screen.queryByLabelText('Operator')).toBeNull()
+    expect(screen.queryByLabelText(/Value/)).toBeNull()
+  })
+
+  it('surfaces the ignored count beside the match count', () => {
+    const dispatch = vi.fn()
+    render(
+      <FilterPanel
+        state={{ ...initialState(), phase: 'ready', tree: legacyTree() }}
+        dispatch={dispatch}
+        rows={ROWS}
+        filtered={ROWS}
+        ignoredCount={1}
+        now={NOW}
+      />
+    )
+    expect(screen.getByText('1 condition ignored (deleted field)')).toBeInTheDocument()
+  })
+})
+
+describe('FilterPanel saving a view', () => {
+  it('swaps the button for a name input and saves', async () => {
+    const { dispatch, user } = setup({ savingView: true, saveName: 'My view' })
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'view/confirmSave' })
+  })
+
+  it('cancels without saving', async () => {
+    const { dispatch, user } = setup({ savingView: true })
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'view/cancelSave' })
+  })
+})
+
+describe('FilterPanel empty tree', () => {
+  it('renders the footer actions with no conditions', () => {
+    setup({ tree: emptyTree() })
+    expect(screen.getByRole('button', { name: /\+ Condition/ })).toBeInTheDocument()
+  })
+})
