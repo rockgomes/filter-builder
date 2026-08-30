@@ -1,0 +1,171 @@
+.scrollContainer {
+  flex: 1;
+  overflow: auto;
+  background: #fff;
+  position: relative;
+}
+
+/* --- Header row --- */
+
+.headerRow {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  height: 34px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--surface-header);
+  border-bottom: 1px solid var(--border-strong);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.checkboxHeaderCell {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: 40px;
+  flex: none;
+  background: var(--surface-header);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--border-strong);
+}
+
+.headerCell {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  border-right: 1px solid var(--border-soft);
+}
+
+.nameHeaderCell {
+  position: sticky;
+  left: 40px;
+  z-index: 2;
+  background: var(--surface-header);
+  border-right: 1px solid var(--border-strong);
+}
+
+.headerBtn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.headerLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sortGlyph {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.resizeHandle {
+  width: 7px;
+  flex: none;
+  align-self: stretch;
+  cursor: col-resize;
+}
+
+.resizeHandle:hover {
+  background: var(--accent-border-soft);
+}
+
+/* --- Rows --- */
+
+.row {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  border-bottom: 1px solid var(--border-row);
+  background: #fff;
+}
+
+.zebra {
+  background: var(--surface-zebra);
+}
+
+.row:hover {
+  background: var(--surface-hover);
+}
+
+.selected {
+  background: var(--accent-tint-1);
+}
+
+.checkboxCell {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: 40px;
+  flex: none;
+  background: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--border-soft);
+}
+
+.nameCell {
+  position: sticky;
+  left: 40px;
+  z-index: 1;
+  background: inherit;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-weight: 500;
+  font-size: 12.5px;
+  border-right: 1px solid var(--border-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell {
+  flex: none;
+  font-size: 12.5px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border-right: 1px solid var(--border-row);
+}
+
+.cellMono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.cellRight {
+  justify-content: flex-end;
+}
+
+.checkbox {
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
