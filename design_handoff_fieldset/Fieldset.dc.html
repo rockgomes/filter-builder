@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#eef1f6}
+*{box-sizing:border-box}
+a{color:#4c5fd5}a:hover{color:#3a49b0}
+input,select,button{font-family:inherit}
+input:focus,select:focus{outline:2px solid #c3caf0;outline-offset:-1px}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+::-webkit-scrollbar{height:10px;width:10px}
+::-webkit-scrollbar-thumb{background:#ccd4e2;border-radius:5px;border:2px solid #fff}
+::-webkit-scrollbar-corner{background:#fff}
+</style>
+</helmet>
+<div style="font-family:'Instrument Sans',sans-serif;color:#232936;background:#eef1f6">
+<section data-screen-label="Case study intro" style="max-width:920px;margin:0 auto;padding:72px 32px 60px">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#4c5fd5;font-weight:600;margin-bottom:14px">Case study · Interaction design + build</div>
+  <h1 style="margin:0 0 14px;font-size:36px;line-height:1.15;letter-spacing:-0.02em;font-weight:700">The hardest control in B2B SaaS,<br>with the edge cases nobody demos.</h1>
+  <p style="margin:0 0 8px;font-size:15px;line-height:1.65;color:#566179;max-width:640px;text-wrap:pretty">Fieldset is a working query builder and data table over 5,000 fake companies — no backend, everything in the browser. Nested AND/OR groups, saved views, live match counts, virtualized rows, and the messy states real products get wrong.</p>
+  <p style="margin:0 0 28px;font-size:13px;color:#8b96ad">Designed &amp; built as a portfolio experiment. Everything below is interactive.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:28px">
+    <div style="background:#fff;border:1px solid #e2e7f0;border-radius:14px;padding:16px 16px 14px;box-shadow:0 1px 3px rgba(28,35,54,0.05)">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4c5fd5;font-weight:600;margin-bottom:8px">TRY 01</div>
+      <div style="font-weight:600;font-size:13.5px;margin-bottom:4px">Selection that survives a filter change</div>
+      <div style="font-size:12.5px;line-height:1.55;color:#667089">Select a few rows, hit “Select all matching”, then tighten a condition. Fieldset asks what you meant instead of guessing.</div>
+    </div>
+    <div style="background:#fff;border:1px solid #e2e7f0;border-radius:14px;padding:16px 16px 14px;box-shadow:0 1px 3px rgba(28,35,54,0.05)">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4c5fd5;font-weight:600;margin-bottom:8px">TRY 02</div>
+      <div style="font-weight:600;font-size:13.5px;margin-bottom:4px">A saved view pointing at a deleted field</div>
+      <div style="font-size:12.5px;line-height:1.55;color:#667089">Open the “EMEA legacy” view. The dead condition is flagged and ignored — the view still works instead of erroring.</div>
+    </div>
+    <div style="background:#fff;border:1px solid #e2e7f0;border-radius:14px;padding:16px 16px 14px;box-shadow:0 1px 3px rgba(28,35,54,0.05)">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4c5fd5;font-weight:600;margin-bottom:8px">TRY 03</div>
+      <div style="font-weight:600;font-size:13.5px;margin-bottom:4px">50 on screen vs. all 5,000 matching</div>
+      <div style="font-size:12.5px;line-height:1.55;color:#667089">The header checkbox selects what you can see; the action bar offers the full matching set. Two different promises, kept separate.</div>
+    </div>
+    <div style="background:#fff;border:1px solid #e2e7f0;border-radius:14px;padding:16px 16px 14px;box-shadow:0 1px 3px rgba(28,35,54,0.05)">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4c5fd5;font-weight:600;margin-bottom:8px">TRY 04</div>
+      <div style="font-weight:600;font-size:13.5px;margin-bottom:4px">50,000 rows, still smooth</div>
+      <div style="font-size:12.5px;line-height:1.55;color:#667089">Flip the demo toggle to 50k. Virtualized rows, multi-column sort (shift-click headers), resize and drag-reorder columns — no pagination.</div>
+    </div>
+  </div>
+  <a href="#demo" style="display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 18px;background:#4c5fd5;color:#fff;border-radius:10px;font-size:13.5px;font-weight:600;text-decoration:none;box-shadow:0 2px 8px rgba(76,95,213,0.3)">Jump to the demo ↓</a>
+</section>
+<div id="demo" data-screen-label="Fieldset app" style="height:100vh;display:flex;flex-direction:column;font-size:13px;background:#eef1f6;overflow:hidden;border-top:1px solid #e2e7f0" onClick="{{ closeMenus }}">
+
+  <div style="min-height:52px;flex:none;display:flex;align-items:center;flex-wrap:wrap;row-gap:4px;gap:12px;padding:6px 16px;background:#ffffff;border-bottom:1px solid #e2e7f0;position:relative;z-index:60">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:22px;height:22px;background:#4c5fd5;border-radius:6px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;font-family:'IBM Plex Mono',monospace">F</div>
+      <div style="font-weight:700;font-size:15px;letter-spacing:-0.01em">Fieldset</div>
+    </div>
+    <div style="width:1px;height:20px;background:#e2e7f0"></div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <sc-for list="{{ views }}" as="v" hint-placeholder-count="3">
+        <button onClick="{{ v.onClick }}" style="height:28px;padding:0 11px;border-radius:7px;border:1px solid {{ v.border }};background:{{ v.bg }};color:{{ v.color }};font-size:12.5px;font-weight:500;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px">{{ v.name }}<sc-if value="{{ v.warn }}" hint-placeholder-val="{{ false }}"><span style="color:#d97706;font-weight:700">!</span></sc-if></button>
+      </sc-for>
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8b96ad;text-transform:uppercase;letter-spacing:0.08em">demo</span>
+      <div style="display:flex;flex:none;border:1px solid #e2e7f0;border-radius:7px">
+        <button onClick="{{ setRows5k }}" style="height:26px;padding:0 9px;border:none;cursor:pointer;font-size:11.5px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;background:{{ rows5kBg }};color:{{ rows5kColor }}">5k</button>
+        <button onClick="{{ setRows50k }}" style="height:26px;padding:0 9px;border:none;border-left:1px solid #e2e7f0;border-radius:0 6px 6px 0;cursor:pointer;font-size:11.5px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;background:{{ rows50kBg }};color:{{ rows50kColor }}">50k</button>
+      </div>
+      <button onClick="{{ simError }}" style="height:28px;padding:0 10px;border-radius:7px;border:1px solid #e2e7f0;background:#fff;color:#667089;font-size:12px;cursor:pointer;white-space:nowrap;flex:none" style-hover="color:#b91c1c;border-color:#e8c7c7">break&nbsp;it</button>
+      <div style="width:1px;height:20px;background:#e2e7f0"></div>
+      <div style="display:flex;flex:none;border:1px solid #e2e7f0;border-radius:7px">
+        <button title="Compact" onClick="{{ setDenS }}" style="height:26px;padding:0 9px;border:none;border-radius:6px 0 0 6px;cursor:pointer;font-size:11.5px;background:{{ denSBg }};color:{{ denSColor }}">S</button>
+        <button title="Comfortable" onClick="{{ setDenM }}" style="height:26px;padding:0 9px;border:none;border-left:1px solid #e2e7f0;cursor:pointer;font-size:11.5px;background:{{ denMBg }};color:{{ denMColor }}">M</button>
+        <button title="Spacious" onClick="{{ setDenL }}" style="height:26px;padding:0 9px;border:none;border-left:1px solid #e2e7f0;border-radius:0 6px 6px 0;cursor:pointer;font-size:11.5px;background:{{ denLBg }};color:{{ denLColor }}">L</button>
+      </div>
+      <button onClick="{{ toggleColMenu }}" style="height:28px;padding:0 11px;border-radius:7px;border:1px solid #e2e7f0;background:#fff;font-size:12.5px;font-weight:500;cursor:pointer;color:#232936;white-space:nowrap;flex:none">Columns ▾</button>
+    </div>
+    <sc-if value="{{ colMenuOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ stopClick }}" style="position:absolute;top:48px;right:16px;width:236px;background:#fff;border:1px solid #e2e7f0;border-radius:10px;box-shadow:0 8px 28px rgba(23,23,28,0.12);padding:6px;z-index:100">
+        <div style="font-size:10.5px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;color:#8b96ad;padding:6px 8px">show / hide · reorder</div>
+        <sc-for list="{{ colMenu }}" as="cm" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px" style-hover="background:#eef1f6">
+            <input type="checkbox" checked="{{ cm.visible }}" onChange="{{ cm.toggle }}" style="accent-color:#4c5fd5;margin:0">
+            <span style="flex:1;font-size:12.5px">{{ cm.label }}</span>
+            <button onClick="{{ cm.up }}" style="border:none;background:none;cursor:pointer;color:#8b96ad;font-size:12px;padding:2px" style-hover="color:#232936">↑</button>
+            <button onClick="{{ cm.down }}" style="border:none;background:none;cursor:pointer;color:#8b96ad;font-size:12px;padding:2px" style-hover="color:#232936">↓</button>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="flex:none;background:#fff;border-bottom:1px solid #e2e7f0;padding:12px 16px 14px">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;color:#232936">{{ matchStr }}</span>
+      <span style="color:#667089;font-size:12.5px">of {{ totalStr }} match</span>
+      <sc-if value="{{ ignoredNote }}" hint-placeholder-val="{{ false }}">
+        <span style="color:#d97706;font-size:12px;font-weight:500">· {{ ignoredNote }}</span>
+      </sc-if>
+      <div style="flex:1"></div>
+      <sc-if value="{{ savingView }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:6px;align-items:center">
+          <input value="{{ saveName }}" onChange="{{ onSaveName }}" placeholder="View name…" style="height:28px;border:1px solid #c3caf0;border-radius:7px;padding:0 9px;font-size:12.5px;width:170px;background:#fafbfd">
+          <button onClick="{{ confirmSave }}" style="height:28px;padding:0 11px;border-radius:7px;border:none;background:#4c5fd5;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">Save</button>
+          <button onClick="{{ cancelSave }}" style="height:28px;padding:0 9px;border-radius:7px;border:1px solid #e2e7f0;background:#fff;font-size:12.5px;cursor:pointer;color:#667089">Cancel</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ notSavingView }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ startSave }}" style="height:28px;padding:0 11px;border-radius:7px;border:1px solid #dcdfef;background:#f4f5fc;color:#4c5fd5;font-size:12.5px;font-weight:600;cursor:pointer">Save as view</button>
+      </sc-if>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <sc-for list="{{ items }}" as="it" hint-placeholder-count="2">
+        <sc-if value="{{ it.isCond }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:8px">
+            <sc-if value="{{ it.joiner }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ it.toggleJoin }}" title="Toggle AND/OR" style="width:44px;height:26px;flex:none;border-radius:6px;border:1px solid #dcdfef;background:#f4f5fc;color:#4c5fd5;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;cursor:pointer">{{ it.joiner }}</button>
+            </sc-if>
+            <sc-if value="{{ it.first }}" hint-placeholder-val="{{ true }}">
+              <span style="width:44px;flex:none;text-align:center;color:#8b96ad;font-size:12px">Where</span>
+            </sc-if>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:4px 6px;border:1px solid {{ it.boxBorder }};background:{{ it.boxBg }};border-radius:8px">
+              <select value="{{ it.fieldKey }}" onChange="{{ it.setField }}" style="height:26px;border:1px solid #e2e7f0;border-radius:6px;background:#fff;font-size:12.5px;padding:0 4px;color:#232936">
+                <sc-for list="{{ it.fieldOpts }}" as="fo"><option value="{{ fo.v }}">{{ fo.label }}</option></sc-for>
+              </select>
+              <sc-if value="{{ it.warn }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:11.5px;color:#b45309;font-weight:500">field was deleted — condition ignored</span>
+                <button onClick="{{ it.remove }}" style="height:24px;padding:0 8px;border-radius:6px;border:1px solid #ecd9b8;background:#fff;color:#b45309;font-size:11.5px;cursor:pointer">remove</button>
+              </sc-if>
+              <sc-if value="{{ it.ok }}" hint-placeholder-val="{{ true }}">
+                <select value="{{ it.op }}" onChange="{{ it.setOp }}" style="height:26px;border:1px solid #e2e7f0;border-radius:6px;background:#fff;font-size:12.5px;padding:0 4px;color:#667089">
+                  <sc-for list="{{ it.opOpts }}" as="oo"><option value="{{ oo.v }}">{{ oo.label }}</option></sc-for>
+                </select>
+                <sc-if value="{{ it.showText }}" hint-placeholder-val="{{ false }}">
+                  <input value="{{ it.value }}" onChange="{{ it.setValue }}" placeholder="type to filter…" style="height:26px;border:1px solid #e2e7f0;border-radius:6px;padding:0 8px;font-size:12.5px;width:150px;background:#fafbfd">
+                </sc-if>
+                <sc-if value="{{ it.showNum }}" hint-placeholder-val="{{ false }}">
+                  <input type="number" value="{{ it.value }}" onChange="{{ it.setValue }}" style="height:26px;border:1px solid #e2e7f0;border-radius:6px;padding:0 8px;font-size:12.5px;width:90px;background:#fafbfd;font-family:'IBM Plex Mono',monospace">
+                </sc-if>
+                <sc-if value="{{ it.showNum2 }}" hint-placeholder-val="{{ false }}">
+                  <span style="color:#8b96ad;font-size:12px">and</span>
+                  <input type="number" value="{{ it.value2 }}" onChange="{{ it.setValue2 }}" style="height:26px;border:1px solid #e2e7f0;border-radius:6px;padding:0 8px;font-size:12.5px;width:90px;background:#fafbfd;font-family:'IBM Plex Mono',monospace">
+                </sc-if>
+                <sc-if value="{{ it.showDate }}" hint-placeholder-val="{{ false }}">
+                  <input type="date" value="{{ it.value }}" onChange="{{ it.setValue }}" style="height:26px;border:1px solid #e2e7f0;border-radius:6px;padding:0 6px;font-size:12px;background:#fafbfd;font-family:'IBM Plex Mono',monospace">
+                </sc-if>
+                <sc-if value="{{ it.showDate2 }}" hint-placeholder-val="{{ false }}">
+                  <span style="color:#8b96ad;font-size:12px">and</span>
+                  <input type="date" value="{{ it.value2 }}" onChange="{{ it.setValue2 }}" style="height:26px;border:1px solid #e2e7f0;border-radius:6px;padding:0 6px;font-size:12px;background:#fafbfd;font-family:'IBM Plex Mono',monospace">
+                </sc-if>
+                <sc-if value="{{ it.showEnum }}" hint-placeholder-val="{{ false }}">
+                  <select value="{{ it.value }}" onChange="{{ it.setValue }}" style="height:26px;border:1px solid #e2e7f0;border-radius:6px;background:#fff;font-size:12.5px;padding:0 4px">
+                    <sc-for list="{{ it.enumOpts }}" as="eo"><option value="{{ eo }}">{{ eo }}</option></sc-for>
+                  </select>
+                </sc-if>
+                <sc-if value="{{ it.showEnumMulti }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+                    <sc-for list="{{ it.enumChips }}" as="chip">
+                      <button onClick="{{ chip.toggle }}" style="height:24px;padding:0 9px;border-radius:12px;border:1px solid {{ chip.border }};background:{{ chip.bg }};color:{{ chip.color }};font-weight:{{ chip.fw }};font-size:12px;cursor:pointer;white-space:nowrap">{{ chip.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aab3c5;padding:0 2px">{{ it.hits }}</span>
+              </sc-if>
+              <button onClick="{{ it.remove }}" title="Remove condition" style="width:22px;height:22px;border:none;background:none;color:#aab3c5;cursor:pointer;font-size:14px;line-height:1;border-radius:5px" style-hover="color:#b91c1c;background:#fbf1f1">×</button>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ it.isGroup }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:flex-start;gap:8px">
+            <sc-if value="{{ it.joiner }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ it.toggleJoin }}" style="width:44px;height:26px;flex:none;margin-top:8px;border-radius:6px;border:1px solid #dcdfef;background:#f4f5fc;color:#4c5fd5;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;cursor:pointer">{{ it.joiner }}</button>
+            </sc-if>
+            <sc-if value="{{ it.first }}" hint-placeholder-val="{{ false }}">
+              <span style="width:44px;flex:none;text-align:center;color:#8b96ad;font-size:12px;margin-top:12px">Where</span>
+            </sc-if>
+            <div style="flex:none;border:1px solid #e2e7f0;border-left:3px solid #c3caf0;border-radius:8px;background:#f9fafd;padding:8px 10px;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:11px;color:#8b96ad;text-transform:uppercase;letter-spacing:0.06em;font-family:'IBM Plex Mono',monospace">group · match</span>
+                <button onClick="{{ it.toggleOp }}" style="height:22px;padding:0 9px;border-radius:5px;border:1px solid #dcdfef;background:#fff;color:#4c5fd5;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;cursor:pointer">{{ it.opLabel }}</button>
+                <div style="flex:1"></div>
+                <button onClick="{{ it.remove }}" style="width:22px;height:22px;border:none;background:none;color:#aab3c5;cursor:pointer;font-size:14px;border-radius:5px" style-hover="color:#b91c1c;background:#fbf1f1">×</button>
+              </div>
+              <sc-for list="{{ it.children }}" as="ch" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <sc-if value="{{ ch.joiner }}" hint-placeholder-val="{{ false }}">
+                    <span style="width:34px;flex:none;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8b96ad">{{ ch.joiner }}</span>
+                  </sc-if>
+                  <sc-if value="{{ ch.first }}" hint-placeholder-val="{{ true }}"><span style="width:34px;flex:none"></span></sc-if>
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:3px 5px;border:1px solid {{ ch.boxBorder }};background:{{ ch.boxBg }};border-radius:7px">
+                    <select value="{{ ch.fieldKey }}" onChange="{{ ch.setField }}" style="height:24px;border:1px solid #e2e7f0;border-radius:5px;background:#fff;font-size:12px;padding:0 3px">
+                      <sc-for list="{{ ch.fieldOpts }}" as="fo2"><option value="{{ fo2.v }}">{{ fo2.label }}</option></sc-for>
+                    </select>
+                    <sc-if value="{{ ch.warn }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:11px;color:#b45309;font-weight:500">deleted — ignored</span>
+                    </sc-if>
+                    <sc-if value="{{ ch.ok }}" hint-placeholder-val="{{ true }}">
+                      <select value="{{ ch.op }}" onChange="{{ ch.setOp }}" style="height:24px;border:1px solid #e2e7f0;border-radius:5px;background:#fff;font-size:12px;padding:0 3px;color:#667089">
+                        <sc-for list="{{ ch.opOpts }}" as="oo2"><option value="{{ oo2.v }}">{{ oo2.label }}</option></sc-for>
+                      </select>
+                      <sc-if value="{{ ch.showText }}" hint-placeholder-val="{{ false }}"><input value="{{ ch.value }}" onChange="{{ ch.setValue }}" style="height:24px;border:1px solid #e2e7f0;border-radius:5px;padding:0 7px;font-size:12px;width:130px;background:#fff"></sc-if>
+                      <sc-if value="{{ ch.showNum }}" hint-placeholder-val="{{ false }}"><input type="number" value="{{ ch.value }}" onChange="{{ ch.setValue }}" style="height:24px;border:1px solid #e2e7f0;border-radius:5px;padding:0 7px;font-size:12px;width:82px;background:#fff;font-family:'IBM Plex Mono',monospace"></sc-if>
+                      <sc-if value="{{ ch.showNum2 }}" hint-placeholder-val="{{ false }}"><span style="color:#8b96ad;font-size:11px">and</span><input type="number" value="{{ ch.value2 }}" onChange="{{ ch.setValue2 }}" style="height:24px;border:1px solid #e2e7f0;border-radius:5px;padding:0 7px;font-size:12px;width:82px;background:#fff;font-family:'IBM Plex Mono',monospace"></sc-if>
+                      <sc-if value="{{ ch.showDate }}" hint-placeholder-val="{{ false }}"><input type="date" value="{{ ch.value }}" onChange="{{ ch.setValue }}" style="height:24px;border:1px solid #e2e7f0;border-radius:5px;padding:0 5px;font-size:11.5px;background:#fff;font-family:'IBM Plex Mono',monospace"></sc-if>
+                      <sc-if value="{{ ch.showDate2 }}" hint-placeholder-val="{{ false }}"><span style="color:#8b96ad;font-size:11px">and</span><input type="date" value="{{ ch.value2 }}" onChange="{{ ch.setValue2 }}" style="height:24px;border:1px solid #e2e7f0;border-radius:5px;padding:0 5px;font-size:11.5px;background:#fff;font-family:'IBM Plex Mono',monospace"></sc-if>
+                      <sc-if value="{{ ch.showEnum }}" hint-placeholder-val="{{ false }}"><select value="{{ ch.value }}" onChange="{{ ch.setValue }}" style="height:24px;border:1px solid #e2e7f0;border-radius:5px;background:#fff;font-size:12px;padding:0 3px"><sc-for list="{{ ch.enumOpts }}" as="eo2"><option value="{{ eo2 }}">{{ eo2 }}</option></sc-for></select></sc-if>
+                      <sc-if value="{{ ch.showEnumMulti }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap"><sc-for list="{{ ch.enumChips }}" as="chip2"><button onClick="{{ chip2.toggle }}" style="height:22px;padding:0 8px;border-radius:11px;border:1px solid {{ chip2.border }};background:{{ chip2.bg }};color:{{ chip2.color }};font-weight:{{ chip2.fw }};font-size:11.5px;cursor:pointer;white-space:nowrap">{{ chip2.label }}</button></sc-for></div></sc-if>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#aab3c5">{{ ch.hits }}</span>
+                    </sc-if>
+                    <button onClick="{{ ch.remove }}" style="width:20px;height:20px;border:none;background:none;color:#aab3c5;cursor:pointer;font-size:13px;border-radius:4px" style-hover="color:#b91c1c">×</button>
+                  </div>
+                </div>
+              </sc-for>
+              <button onClick="{{ it.addCond }}" style="align-self:flex-start;height:24px;padding:0 8px;margin-left:42px;border:none;background:none;color:#4c5fd5;font-size:12px;font-weight:500;cursor:pointer;border-radius:5px" style-hover="background:#f0f2fb">+ condition</button>
+            </div>
+          </div>
+        </sc-if>
+      </sc-for>
+      <div style="display:flex;gap:6px;margin-left:52px">
+        <button onClick="{{ addRootCond }}" style="height:26px;padding:0 10px;border:1px dashed #c8d0e0;background:none;color:#4c5fd5;font-size:12px;font-weight:500;cursor:pointer;border-radius:7px" style-hover="border-color:#4c5fd5;background:#f7f8fd">+ Condition</button>
+        <button onClick="{{ addRootGroup }}" style="height:26px;padding:0 10px;border:1px dashed #c8d0e0;background:none;color:#4c5fd5;font-size:12px;font-weight:500;cursor:pointer;border-radius:7px" style-hover="border-color:#4c5fd5;background:#f7f8fd">+ Group ( OR )</button>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ reconBanner }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:none;display:flex;align-items:center;gap:10px;padding:9px 16px;background:#fdf6ea;border-bottom:1px solid #f0dfc0;font-size:12.5px;color:#7c5410">
+      <span style="font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:11px;background:#f5e6c8;border-radius:4px;padding:2px 6px">SELECTION</span>
+      <span>{{ reconText }}</span>
+      <div style="flex:1"></div>
+      <button onClick="{{ reconKeep }}" style="height:26px;padding:0 10px;border-radius:6px;border:1px solid #e2cf9f;background:#fff;font-size:12px;font-weight:500;cursor:pointer;color:#7c5410">Keep all {{ reconAllStr }}</button>
+      <button onClick="{{ reconTrim }}" style="height:26px;padding:0 10px;border-radius:6px;border:none;background:#7c5410;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Trim to {{ reconMatchStr }} matching</button>
+      <button onClick="{{ reconClear }}" style="height:26px;padding:0 10px;border-radius:6px;border:1px solid #e2cf9f;background:none;font-size:12px;cursor:pointer;color:#7c5410">Clear selection</button>
+    </div>
+  </sc-if>
+
+  <div style="flex:1;min-height:0;position:relative;background:#fff">
+    <sc-if value="{{ isReady }}" hint-placeholder-val="{{ true }}">
+      <div ref="{{ scrollRef }}" onScroll="{{ onScroll }}" style="position:absolute;inset:0;overflow:auto">
+        <div style="position:sticky;top:0;z-index:5;display:flex;width:max-content;min-width:100%;background:#f7f9fc;border-bottom:1px solid #e2e7f0;height:34px">
+          <div style="position:sticky;left:0;z-index:6;width:40px;flex:none;background:#f7f9fc;display:flex;align-items:center;justify-content:center;border-right:1px solid #e9edf4">
+            <input type="checkbox" checked="{{ headChecked }}" onChange="{{ onHeadCheck }}" title="Select rows on screen" style="accent-color:#4c5fd5;margin:0;cursor:pointer">
+          </div>
+          <div onClick="{{ onSortName }}" style="position:sticky;left:40px;z-index:6;width:{{ nameW }}px;flex:none;background:#f7f9fc;display:flex;align-items:center;gap:6px;padding:0 10px;font-size:12px;font-weight:600;color:#566179;border-right:1px solid #e2e7f0;cursor:pointer;user-select:none">
+            <span>Company</span><span style="color:#4c5fd5;font-family:'IBM Plex Mono',monospace;font-size:10.5px">{{ nameSortGlyph }}</span>
+            <div style="flex:1"></div>
+            <div onMouseDown="{{ nameResize }}" onClick="{{ stopClick }}" style="width:7px;align-self:stretch;cursor:col-resize;margin-right:-10px" style-hover="background:#dcdfef"></div>
+          </div>
+          <sc-for list="{{ headCols }}" as="hc" hint-placeholder-count="5">
+            <div draggable="{{ true }}" onDragStart="{{ hc.onDragStart }}" onDragOver="{{ hc.onDragOver }}" onDrop="{{ hc.onDrop }}" onClick="{{ hc.onSort }}" title="Click to sort · shift-click to multi-sort · drag to reorder" style="width:{{ hc.w }}px;flex:none;display:flex;align-items:center;gap:5px;padding:0 10px;font-size:12px;font-weight:600;color:#566179;border-right:1px solid #e9edf4;cursor:pointer;user-select:none;justify-content:{{ hc.justify }}">
+              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ hc.label }}</span>
+              <span style="color:#4c5fd5;font-family:'IBM Plex Mono',monospace;font-size:10.5px;white-space:nowrap">{{ hc.sortGlyph }}</span>
+              <div onMouseDown="{{ hc.onResize }}" onClick="{{ stopClick }}" style="width:7px;align-self:stretch;cursor:col-resize;margin-left:auto;margin-right:-10px;flex:none" style-hover="background:#dcdfef"></div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
+          <div style="height:{{ topPad }}px"></div>
+          <sc-for list="{{ rows }}" as="row" hint-placeholder-count="10">
+            <div style="display:flex;width:max-content;min-width:100%;height:{{ row.h }}px;background:{{ row.bg }};border-bottom:1px solid #f0f3f8" style-hover="background:#f4f5fa">
+              <div style="position:sticky;left:0;z-index:1;width:40px;flex:none;background:inherit;display:flex;align-items:center;justify-content:center;border-right:1px solid #e9edf4">
+                <input type="checkbox" checked="{{ row.selected }}" onClick="{{ row.onCheck }}" onChange="{{ noop }}" style="accent-color:#4c5fd5;margin:0;cursor:pointer">
+              </div>
+              <div style="position:sticky;left:40px;z-index:1;width:{{ nameW }}px;flex:none;background:inherit;display:flex;align-items:center;padding:0 10px;font-weight:500;border-right:1px solid #e2e7f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px">{{ row.name }}</div>
+              <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="5">
+                <div style="width:{{ cell.w }}px;flex:none;display:flex;align-items:center;padding:0 10px;border-right:1px solid #f0f3f8;white-space:nowrap;overflow:hidden;font-size:{{ cell.fs }};font-family:{{ cell.ff }};color:{{ cell.color }};justify-content:{{ cell.justify }}">
+                  <sc-if value="{{ cell.isBadge }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:5px;background:{{ cell.badgeBg }};color:{{ cell.badgeColor }}">{{ cell.text }}</span>
+                  </sc-if>
+                  <sc-if value="{{ cell.notBadge }}" hint-placeholder-val="{{ true }}">
+                    <span style="overflow:hidden;text-overflow:ellipsis">{{ cell.text }}</span>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+          <div style="height:{{ botPad }}px"></div>
+        </sc-if>
+        <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:80px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;position:sticky;left:0">
+            <div style="width:44px;height:44px;border:1px dashed #c8d0e0;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#aab3c5;font-size:18px;font-family:'IBM Plex Mono',monospace">0</div>
+            <div style="font-weight:600;font-size:14px">No companies match this filter</div>
+            <div style="color:#667089;font-size:12.5px">Loosen a condition, or start over.</div>
+            <button onClick="{{ clearFilters }}" style="margin-top:4px;height:30px;padding:0 14px;border-radius:7px;border:none;background:#4c5fd5;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">Clear filters</button>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;padding:0">
+        <div style="height:34px;background:#f7f9fc;border-bottom:1px solid #e2e7f0"></div>
+        <sc-for list="{{ skels }}" as="sk" hint-placeholder-count="8">
+          <div style="height:40px;display:flex;align-items:center;gap:16px;padding:0 12px;border-bottom:1px solid #f0f3f8">
+            <div style="width:14px;height:14px;border-radius:4px;background:#e8ecf3"></div>
+            <div style="width:{{ sk.w1 }}px;height:11px;border-radius:4px;background:linear-gradient(90deg,#e8ecf3 25%,#f4f6fa 50%,#e8ecf3 75%);background-size:400px 100%;animation:shimmer 1.3s infinite linear"></div>
+            <div style="width:{{ sk.w2 }}px;height:11px;border-radius:4px;background:linear-gradient(90deg,#e8ecf3 25%,#f4f6fa 50%,#e8ecf3 75%);background-size:400px 100%;animation:shimmer 1.3s infinite linear"></div>
+            <div style="width:{{ sk.w3 }}px;height:11px;border-radius:4px;background:linear-gradient(90deg,#e8ecf3 25%,#f4f6fa 50%,#e8ecf3 75%);background-size:400px 100%;animation:shimmer 1.3s infinite linear"></div>
+          </div>
+        </sc-for>
+        <div style="position:absolute;bottom:18px;left:0;right:0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8b96ad">loading {{ loadingCountStr }} companies…</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
+        <div style="width:44px;height:44px;border-radius:10px;background:#fbf1f1;color:#b91c1c;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace">!</div>
+        <div style="font-weight:600;font-size:14px">Couldn't load companies</div>
+        <div style="color:#667089;font-size:12.5px;font-family:'IBM Plex Mono',monospace">GET /api/companies → 503</div>
+        <button onClick="{{ retry }}" style="margin-top:4px;height:30px;padding:0 14px;border-radius:7px;border:none;background:#232936;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer">Retry</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ bulkBar }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:10px;background:#232936;color:#fff;border-radius:11px;padding:8px 12px;box-shadow:0 10px 30px rgba(23,23,28,0.3);white-space:nowrap">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600">{{ selCountStr }} selected</span>
+        <sc-if value="{{ showSelectAll }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ selectAllMatching }}" style="height:26px;padding:0 10px;border-radius:6px;border:1px solid #414d66;background:none;color:#a5b0f0;font-size:12px;font-weight:500;cursor:pointer" style-hover="background:#2e374a">Select all {{ matchStr }} matching</button>
+        </sc-if>
+        <div style="width:1px;height:16px;background:#414d66"></div>
+        <button onClick="{{ bulkCrm }}" style="height:26px;padding:0 10px;border-radius:6px;border:none;background:#4c5fd5;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Add to CRM</button>
+        <button onClick="{{ bulkExport }}" style="height:26px;padding:0 10px;border-radius:6px;border:1px solid #414d66;background:none;color:#e2e7f0;font-size:12px;cursor:pointer" style-hover="background:#2e374a">Export CSV</button>
+        <button onClick="{{ clearSel }}" style="width:24px;height:24px;border:none;background:none;color:#8b96ad;cursor:pointer;font-size:15px;border-radius:5px" style-hover="color:#fff">×</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:30;background:#fff;border:1px solid #e2e7f0;border-radius:9px;padding:8px 14px;font-size:12.5px;font-weight:500;box-shadow:0 8px 24px rgba(23,23,28,0.12);color:#232936">{{ toast }}</div>
+    </sc-if>
+  </div>
+
+  <div style="height:28px;flex:none;display:flex;align-items:center;gap:14px;padding:0 16px;background:#f7f9fc;border-top:1px solid #e2e7f0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8b96ad">
+    <span>{{ matchStr }} rows · virtualized</span>
+    <span>sort: {{ sortSummary }}</span>
+    <div style="flex:1"></div>
+    <span>fieldset — a filter &amp; table edge-case study</span>
+  </div>
+</div>
+
+</div></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Compact&quot;,&quot;options&quot;:[&quot;Compact&quot;,&quot;Comfortable&quot;,&quot;Spacious&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Table&quot;},&quot;zebra&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Table&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.FIELDS = [
+      {key:'name', label:'Company name', type:'text'},
+      {key:'industry', label:'Industry', type:'enum', options:['SaaS','Fintech','Healthcare','E-commerce','Cybersecurity','EdTech','Logistics','AI/ML']},
+      {key:'stage', label:'Stage', type:'enum', options:['Seed','Series A','Series B','Series C','Public']},
+      {key:'headcount', label:'Headcount', type:'number'},
+      {key:'revenue', label:'Revenue ($M)', type:'number'},
+      {key:'country', label:'Country', type:'enum', options:['United States','United Kingdom','Germany','France','Canada','Australia','India','Brazil']},
+      {key:'founded', label:'Founded', type:'date'},
+      {key:'lastActivity', label:'Last activity', type:'date'},
+      {key:'owner', label:'Owner', type:'text'},
+      {key:'inCRM', label:'In CRM', type:'boolean'}
+    ];
+    this.OPS = {
+      text: [['contains','contains'],['is','is'],['is_not','is not'],['starts','starts with'],['empty','is empty']],
+      number: [['gt','more than'],['lt','less than'],['eq','equals'],['between','between']],
+      enum: [['is','is'],['is_not','is not'],['any_of','is any of'],['not_any_of','is not any of']],
+      date: [['last30','in last 30 days'],['last90','in last 90 days'],['before','before'],['after','after'],['between','between']],
+      boolean: [['true','is true'],['false','is false']]
+    };
+    this.COLS = [
+      {key:'industry', label:'Industry', w:130},
+      {key:'stage', label:'Stage', w:110},
+      {key:'headcount', label:'Headcount', w:110, mono:true, right:true},
+      {key:'revenue', label:'Revenue', w:110, mono:true, right:true},
+      {key:'country', label:'Country', w:140},
+      {key:'founded', label:'Founded', w:110, mono:true},
+      {key:'lastActivity', label:'Last activity', w:130, mono:true},
+      {key:'owner', label:'Owner', w:150},
+      {key:'inCRM', label:'CRM', w:90, badge:true}
+    ];
+    let id = 0; this._mkid = () => 'n' + (++id) + '_' + Math.random().toString(36).slice(2, 7);
+    const c = (field, op, value, value2) => ({kind:'cond', id:this._mkid(), field, op, value: value===undefined?'':value, value2: value2===undefined?'':value2});
+    const icpTree = () => ({op:'AND', children:[
+      c('industry','is','SaaS'),
+      {kind:'group', id:this._mkid(), op:'OR', children:[c('headcount','gt',200), c('revenue','gt',5)]},
+      c('inCRM','false')
+    ]});
+    this._icpTree = icpTree;
+    this.state = {
+      phase:'loading', dataN:5000, dataV:0,
+      tree: icpTree(),
+      views: [
+        {id:'v_all', name:'All companies', tree:{op:'AND',children:[]}},
+        {id:'v_icp', name:'ICP · Mid-market SaaS', tree:icpTree()},
+        {id:'v_ncrm', name:'Not in CRM, active', tree:{op:'AND',children:[c('inCRM','false'), c('lastActivity','last90')]}},
+        {id:'v_legacy', name:'EMEA legacy', tree:{op:'AND',children:[c('region_emea','is','EMEA'), c('revenue','gt',1)]}, warn:true}
+      ],
+      activeView:'v_icp',
+      sorts:[{key:'revenue', dir:'desc'}],
+      colOrder: this.COLS.map(x=>x.key), hidden:{}, widths:{}, nameW:220,
+      selIds:{}, selMode:'ids', snapCount:0, anchor:null, reconDismissKey:null,
+      scrollTop:0, viewH:600,
+      density:null, colMenuOpen:false, savingView:false, saveName:'', toast:null
+    };
+    this._rows = []; this._cache = {};
+  }
+  componentDidMount() {
+    this._load(900);
+    this._ro = new ResizeObserver(() => { if (this._sc) this.setState({viewH: this._sc.clientHeight}); });
+  }
+  componentWillUnmount() { if (this._ro) this._ro.disconnect(); }
+  _load(ms) {
+    this.setState({phase:'loading'});
+    clearTimeout(this._lt);
+    this._lt = setTimeout(() => {
+      this._rows = this._gen(this.state.dataN);
+      this._cache = {};
+      this.setState(s => ({phase:'ready', dataV:s.dataV+1, scrollTop:0}));
+    }, ms);
+  }
+  _gen(n) {
+    let s = 42; const R = () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const pk = a => a[Math.floor(R()*a.length)];
+    const pre = ['Arden','Basalt','Cinder','Dovetail','Ember','Fable','Gable','Halcyon','Ionic','Juniper','Kestrel','Lumen','Meridian','Nimbus','Onyx','Pillar','Quarry','Rivet','Sable','Tandem','Umber','Vantage','Willow','Zenith','Cobalt','Drift','Ferrous','Grove','Harbor','Ledger','Marrow','North','Opal','Prism','Relay','Signal','Tessera','Vector','Atlas','Beacon'];
+    const suf = ['Labs','Systems','HQ','AI','Cloud','Works','Data','Stack','Base','Flow','Metrics','Grid','Ops','Loop','Forge','Path','Scale','Pulse','Link','Core'];
+    const inds = this.FIELDS[1].options, stages = this.FIELDS[2].options, ctys = this.FIELDS[5].options;
+    const owners = ['Ana Ferreira','Ben Okafor','Chloe Martin','Dev Patel','Elif Aydin','Franz Weber','Grace Liu','Hugo Silva','Iris Kowalski','Jonas Berg','Keiko Tanaka','Liam Byrne'];
+    const now = Date.now(), day = 864e5;
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      out.push({
+        id:i,
+        name: pk(pre) + ' ' + pk(suf),
+        industry: pk(inds),
+        stage: pk(stages),
+        headcount: Math.floor(Math.exp(R()*9.2)) + 2,
+        revenue: +((Math.exp(R()*6.2))/10).toFixed(1),
+        country: pk(ctys),
+        founded: Date.UTC(1995 + Math.floor(R()*30), Math.floor(R()*12), 1 + Math.floor(R()*28)),
+        lastActivity: now - Math.floor(R()*240)*day,
+        owner: pk(owners),
+        inCRM: R() < 0.42
+      });
+    }
+    return out;
+  }
+  _fdef(k) { return this.FIELDS.find(f => f.key === k); }
+  _evalCond(c, row) {
+    const f = this._fdef(c.field); if (!f) return null;
+    const v = row[c.field], now = Date.now(), day = 864e5;
+    const s = (c.value ?? '') + '';
+    switch (f.type) {
+      case 'text': {
+        const t = (v+'').toLowerCase(), q = s.toLowerCase();
+        if (c.op==='empty') return !t;
+        if (!q) return true;
+        if (c.op==='contains') return t.includes(q);
+        if (c.op==='is') return t===q;
+        if (c.op==='is_not') return t!==q;
+        if (c.op==='starts') return t.startsWith(q);
+        return true;
+      }
+      case 'number': {
+        if (s==='' ) return true;
+        const a = parseFloat(s), b = parseFloat(c.value2);
+        if (c.op==='gt') return v > a;
+        if (c.op==='lt') return v < a;
+        if (c.op==='eq') return v === a;
+        if (c.op==='between') return isNaN(b) ? true : (v >= Math.min(a,b) && v <= Math.max(a,b));
+        return true;
+      }
+      case 'enum': {
+        if (c.op==='any_of' || c.op==='not_any_of') {
+          const arr = Array.isArray(c.value) ? c.value : [];
+          if (!arr.length) return true;
+          return c.op==='any_of' ? arr.includes(v) : !arr.includes(v);
+        }
+        if (!s) return true;
+        return c.op==='is_not' ? v !== s : v === s;
+      }
+      case 'date': {
+        if (c.op==='last30') return v >= now - 30*day;
+        if (c.op==='last90') return v >= now - 90*day;
+        const a = Date.parse(s), b = Date.parse(c.value2);
+        if (isNaN(a)) return true;
+        if (c.op==='before') return v < a;
+        if (c.op==='after') return v > a;
+        if (c.op==='between') return isNaN(b) ? true : (v >= Math.min(a,b) && v <= Math.max(a,b));
+        return true;
+      }
+      case 'boolean': return c.op==='false' ? !v : !!v;
+    }
+    return true;
+  }
+  _evalGroup(g, row) {
+    const rs = [];
+    for (const ch of g.children) {
+      const r = ch.kind==='group' ? this._evalGroup(ch, row) : this._evalCond(ch, row);
+      if (r !== null) rs.push(r);
+    }
+    if (!rs.length) return true;
+    return g.op==='OR' ? rs.some(Boolean) : rs.every(Boolean);
+  }
+  _filtered() {
+    const key = this.state.dataV + '|' + JSON.stringify(this.state.tree);
+    if (this._cache.fk !== key) {
+      this._cache.fk = key;
+      this._cache.f = this._rows.filter(r => this._evalGroup(this.state.tree, r));
+      this._cache.condHits = null;
+    }
+    return this._cache.f;
+  }
+  _sorted() {
+    const key = this._cache.fk + '|' + JSON.stringify(this.state.sorts);
+    if (this._cache.sk !== key) {
+      this._cache.sk = key;
+      const sorts = this.state.sorts;
+      const arr = this._filtered().slice();
+      if (sorts.length) arr.sort((a,b) => {
+        for (const s of sorts) {
+          const av = a[s.key], bv = b[s.key];
+          let d = typeof av === 'string' ? av.localeCompare(bv) : (av === bv ? 0 : av > bv ? 1 : -1);
+          if (d) return s.dir==='desc' ? -d : d;
+        }
+        return a.id - b.id;
+      });
+      this._cache.s = arr;
+    }
+    return this._cache.s;
+  }
+  _walk(g, fn) { for (const ch of g.children) { fn(ch, g); if (ch.kind==='group') this._walk(ch, fn); } }
+  _mutTree(fn) {
+    const t = JSON.parse(JSON.stringify(this.state.tree));
+    fn(t);
+    this.setState({tree:t, activeView:null, reconDismissKey:null});
+  }
+  _findIn(g, id) {
+    for (let i = 0; i < g.children.length; i++) {
+      const ch = g.children[i];
+      if (ch.id === id) return [g, i];
+      if (ch.kind==='group') { const r = this._findIn(ch, id); if (r) return r; }
+    }
+    return null;
+  }
+  _newCond() { return {kind:'cond', id:this._mkid(), field:'industry', op:'is', value:'SaaS', value2:''}; }
+  _defaultOp(type) { return this.OPS[type][0][0]; }
+  _fmt(n) { return n.toLocaleString('en-US'); }
+  _fmtDate(ts) { const d = new Date(ts); return d.toISOString().slice(0,10); }
+  _toast(msg) { this.setState({toast:msg}); clearTimeout(this._tt); this._tt = setTimeout(() => this.setState({toast:null}), 2600); }
+  _selSet() { return this.state.selIds; }
+  _condVM(c, parent, small) {
+    const f = this._fdef(c.field);
+    const missing = !f;
+    const set = (patch) => this._mutTree(t => { const r = this._findIn(t, c.id); if (r) Object.assign(r[0].children[r[1]], patch); });
+    const vm = {
+      key: c.id, isCond:true, isGroup:false,
+      fieldKey: c.field,
+      fieldOpts: (missing ? [{v:c.field, label:c.field + ' (deleted)'}] : []).concat(this.FIELDS.map(x => ({v:x.key, label:x.label}))),
+      warn: missing, ok: !missing,
+      boxBorder: missing ? '#ecd9b8' : '#ebebef',
+      boxBg: missing ? '#fdf8ee' : '#fdfdfe',
+      op: c.op, value: c.value ?? '', value2: c.value2 ?? '',
+      setField: e => { const nf = this._fdef(e.target.value); set({field:e.target.value, op: nf ? this._defaultOp(nf.type) : 'is', value: nf && nf.type==='enum' ? nf.options[0] : '', value2:''}); },
+      setOp: e => {
+        const op = e.target.value, multi = op==='any_of' || op==='not_any_of', wasMulti = Array.isArray(c.value);
+        let value = c.value;
+        if (multi && !wasMulti) value = c.value ? [c.value] : [];
+        if (!multi && wasMulti) value = c.value[0] ?? (f && f.options ? f.options[0] : '');
+        set({op, value});
+      },
+      setValue: e => set({value:e.target.value}),
+      setValue2: e => set({value2:e.target.value}),
+      remove: () => this._mutTree(t => { const r = this._findIn(t, c.id); if (r) r[0].children.splice(r[1],1); })
+    };
+    if (!missing) {
+      vm.opOpts = this.OPS[f.type].map(([v,label]) => ({v,label}));
+      const noVal = (f.type==='boolean') || c.op==='empty' || c.op==='last30' || c.op==='last90';
+      vm.showText = f.type==='text' && !noVal;
+      vm.showNum = f.type==='number';
+      vm.showNum2 = f.type==='number' && c.op==='between';
+      vm.showDate = f.type==='date' && !noVal;
+      vm.showDate2 = f.type==='date' && c.op==='between';
+      const enumMulti = f.type==='enum' && (c.op==='any_of' || c.op==='not_any_of');
+      vm.showEnum = f.type==='enum' && !enumMulti;
+      vm.showEnumMulti = enumMulti;
+      vm.enumOpts = f.options || [];
+      if (enumMulti) {
+        const arr = Array.isArray(c.value) ? c.value : [];
+        vm.enumChips = (f.options || []).map(o => ({
+          key: o, label: o,
+          bg: arr.includes(o) ? '#eef0fb' : '#fff', border: arr.includes(o) ? '#c3caf0' : '#e2e7f0',
+          color: arr.includes(o) ? '#4c5fd5' : '#667089', fw: arr.includes(o) ? '600' : '400',
+          toggle: () => set({value: arr.includes(o) ? arr.filter(x => x !== o) : arr.concat([o])})
+        }));
+      }
+      let hits = 0; for (const r of this._rows) if (this._evalCond(c, r)) hits++;
+      vm.hits = this._fmt(hits) + ' hit' + (hits===1?'':'s');
+    }
+    return vm;
+  }
+  renderVals() {
+    const S = this.state, A = '#4c5fd5';
+    const density = S.density ?? (this.props.density ?? 'Compact');
+    const rowH = density==='Compact' ? 32 : density==='Spacious' ? 50 : 40;
+    const zebra = this.props.zebra ?? true;
+    const isReady = S.phase==='ready', isLoading = S.phase==='loading', isError = S.phase==='error';
+    const filtered = isReady ? this._filtered() : [];
+    const sorted = isReady ? this._sorted() : [];
+    const total = this._rows.length;
+
+    // filter tree VMs
+    let ignored = 0;
+    this._walk(S.tree, ch => { if (ch.kind!=='group' && !this._fdef(ch.field)) ignored++; });
+    const mkJoin = (g, idx) => idx===0 ? null : g.op;
+    const items = S.tree.children.map((ch, i) => {
+      if (ch.kind==='group') {
+        const gvm = {
+          key: ch.id, isGroup:true, isCond:false,
+          first: i===0, joiner: mkJoin(S.tree, i),
+          toggleJoin: () => this._mutTree(t => { t.op = t.op==='AND' ? 'OR' : 'AND'; }),
+          opLabel: ch.op==='OR' ? 'ANY ( OR )' : 'ALL ( AND )',
+          toggleOp: () => this._mutTree(t => { const r = this._findIn(t, ch.id); const g = r[0].children[r[1]]; g.op = g.op==='AND'?'OR':'AND'; }),
+          addCond: () => this._mutTree(t => { const r = this._findIn(t, ch.id); r[0].children[r[1]].children.push(this._newCond()); }),
+          remove: () => this._mutTree(t => { const r = this._findIn(t, ch.id); r[0].children.splice(r[1],1); }),
+          children: ch.children.map((cc, j) => Object.assign(this._condVM(cc, ch, true), {first: j===0, joiner: mkJoin(ch, j)}))
+        };
+        return gvm;
+      }
+      return Object.assign(this._condVM(ch, S.tree), {first: i===0, joiner: mkJoin(S.tree, i), toggleJoin: () => this._mutTree(t => { t.op = t.op==='AND' ? 'OR' : 'AND'; })});
+    });
+
+    // views
+    const views = S.views.map(v => ({
+      key: v.id, name: v.name, warn: !!v.warn,
+      bg: S.activeView===v.id ? '#eef0fb' : '#fff',
+      border: S.activeView===v.id ? '#c3caf0' : '#e2e7f0',
+      color: S.activeView===v.id ? A : '#566179',
+      onClick: () => this.setState({tree: JSON.parse(JSON.stringify(v.tree)), activeView: v.id, reconDismissKey:null})
+    }));
+
+    // columns
+    const order = S.colOrder.filter(k => !S.hidden[k]);
+    const colOf = k => this.COLS.find(c => c.key===k);
+    const sortIdx = k => S.sorts.findIndex(s => s.key===k);
+    const glyph = k => { const i = sortIdx(k); if (i<0) return ''; return (S.sorts[i].dir==='asc'?'↑':'↓') + (S.sorts.length>1 ? (i+1) : ''); };
+    const doSort = (k, e) => {
+      this.setState(s => {
+        let sorts = s.sorts.slice();
+        const i = sorts.findIndex(x => x.key===k);
+        if (e.shiftKey) {
+          if (i<0) sorts.push({key:k, dir:'asc'});
+          else if (sorts[i].dir==='asc') sorts[i] = {key:k, dir:'desc'};
+          else sorts.splice(i,1);
+        } else {
+          if (i<0 || sorts.length>1) sorts = [{key:k, dir:'asc'}];
+          else if (sorts[0].dir==='asc') sorts = [{key:k, dir:'desc'}];
+          else sorts = [];
+        }
+        return {sorts};
+      });
+    };
+    const startResize = (k, e) => {
+      e.preventDefault(); e.stopPropagation();
+      const startX = e.clientX, startW = k==='__name' ? S.nameW : (S.widths[k] ?? colOf(k).w);
+      const move = ev => {
+        const w = Math.max(70, startW + ev.clientX - startX);
+        if (k==='__name') this.setState({nameW:w});
+        else this.setState(s => ({widths: Object.assign({}, s.widths, {[k]:w})}));
+      };
+      const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
+      window.addEventListener('mousemove', move); window.addEventListener('mouseup', up);
+    };
+    const headCols = order.map(k => {
+      const c = colOf(k);
+      return {
+        key:k, label:c.label, w: S.widths[k] ?? c.w,
+        justify: c.right ? 'flex-end' : 'flex-start',
+        sortGlyph: glyph(k),
+        onSort: e => doSort(k, e),
+        onResize: e => startResize(k, e),
+        onDragStart: e => { this._dragKey = k; e.dataTransfer.effectAllowed='move'; },
+        onDragOver: e => e.preventDefault(),
+        onDrop: e => {
+          e.preventDefault();
+          const from = this._dragKey; if (!from || from===k) return;
+          this.setState(s => { const o = s.colOrder.filter(x => x!==from); o.splice(o.indexOf(k), 0, from); return {colOrder:o}; });
+        }
+      };
+    });
+    const colMenu = S.colOrder.map((k, i) => {
+      const c = colOf(k);
+      return {
+        key:k, label:c.label, visible: !S.hidden[k],
+        toggle: () => this.setState(s => ({hidden: Object.assign({}, s.hidden, {[k]: !s.hidden[k]})})),
+        up: () => this.setState(s => { if (i===0) return null; const o=s.colOrder.slice(); [o[i-1],o[i]]=[o[i],o[i-1]]; return {colOrder:o}; }),
+        down: () => this.setState(s => { if (i===s.colOrder.length-1) return null; const o=s.colOrder.slice(); [o[i+1],o[i]]=[o[i],o[i+1]]; return {colOrder:o}; })
+      };
+    });
+
+    // virtual window
+    const count = sorted.length;
+    const start = Math.max(0, Math.floor(S.scrollTop / rowH) - 5);
+    const end = Math.min(count, start + Math.ceil(S.viewH / rowH) + 12);
+    const sel = S.selIds, allMode = S.selMode==='all';
+    const isSel = id => allMode ? sel[id] !== false && this._cache.snapSet && this._cache.snapSet.has(id) : !!sel[id];
+    // snapshot set for all-mode
+    if (allMode && !this._cache.snapSet) this._cache.snapSet = new Set(Object.keys(sel).filter(k => sel[k]).map(Number));
+    const checkRow = (row, idx) => e => {
+      e.stopPropagation();
+      const shift = e.shiftKey;
+      this.setState(s => {
+        let ids;
+        if (s.selMode==='all') { ids = {}; this._cache.snapSet.forEach(id => ids[id]=true); }
+        else ids = Object.assign({}, s.selIds);
+        const target = !isSel(row.id);
+        if (shift && s.anchor != null) {
+          const a = Math.min(s.anchor, idx), b = Math.max(s.anchor, idx);
+          for (let i = a; i <= b; i++) { const r = sorted[i]; if (r) { if (target) ids[r.id]=true; else delete ids[r.id]; } }
+        } else {
+          if (target) ids[row.id]=true; else delete ids[row.id];
+        }
+        this._cache.snapSet = null;
+        return {selIds:ids, selMode:'ids', anchor:idx, snapCount:0, reconDismissKey:null};
+      });
+    };
+    const rows = [];
+    for (let i = start; i < end; i++) {
+      const r = sorted[i];
+      const seld = isSel(r.id);
+      const bg = seld ? '#eef0fb' : (zebra && i%2===1 ? '#f8fafc' : '#ffffff');
+      rows.push({
+        key: r.id, h: rowH, bg, name: r.name, selected: seld, onCheck: checkRow(r, i),
+        cells: order.map(k => {
+          const c = colOf(k);
+          let text = r[k], isBadge = false, badgeBg='', badgeColor='';
+          if (k==='headcount') text = this._fmt(r.headcount);
+          else if (k==='revenue') text = '$' + r.revenue + 'M';
+          else if (k==='founded' || k==='lastActivity') text = this._fmtDate(r[k]);
+          else if (k==='inCRM') { isBadge = true; text = r.inCRM ? 'In CRM' : '—'; badgeBg = r.inCRM ? '#e7f4ec' : '#f0f3f8'; badgeColor = r.inCRM ? '#1d7a45' : '#8b96ad'; }
+          return {key:k, w: S.widths[k] ?? c.w, text, isBadge, notBadge: !isBadge, badgeBg, badgeColor,
+            fs: c.mono ? '12px' : '12.5px', ff: c.mono ? "'IBM Plex Mono',monospace" : 'inherit',
+            color: c.mono ? '#46516b' : '#232936', justify: c.right ? 'flex-end' : 'flex-start'};
+        })
+      });
+    }
+    // header checkbox = rows on screen
+    const screenRows = rows;
+    const headChecked = screenRows.length > 0 && screenRows.every(r => r.selected);
+    const onHeadCheck = () => {
+      this.setState(s => {
+        let ids;
+        if (s.selMode==='all') { ids = {}; this._cache.snapSet.forEach(id => ids[id]=true); }
+        else ids = Object.assign({}, s.selIds);
+        for (let i = start; i < end; i++) { const r = sorted[i]; if (headChecked) delete ids[r.id]; else ids[r.id]=true; }
+        this._cache.snapSet = null;
+        return {selIds:ids, selMode:'ids', snapCount:0, reconDismissKey:null};
+      });
+    };
+
+    // selection counts + reconciliation
+    let selCount, matchingSelCount = 0;
+    if (allMode) {
+      const snap = this._cache.snapSet;
+      selCount = snap ? snap.size : 0;
+      for (const r of filtered) if (snap && snap.has(r.id)) matchingSelCount++;
+    } else {
+      selCount = Object.keys(sel).length;
+    }
+    const filterKey = this._cache.fk;
+    const reconNeeded = allMode && S.snapCount > 0 && filtered.length !== S.snapCount && S.reconDismissKey !== filterKey && isReady;
+    const reconBanner = reconNeeded;
+    const reconText = 'You selected all ' + this._fmt(S.snapCount) + ' rows matching the previous filter. The filter changed — ' + this._fmt(matchingSelCount) + ' of them still match.';
+    const clearSelState = {selIds:{}, selMode:'ids', snapCount:0, anchor:null, reconDismissKey:null};
+
+    const sortSummary = S.sorts.length ? S.sorts.map(s => s.key + ' ' + s.dir).join(', ') : 'none';
+    const seg = on => on ? {bg:'#232936', color:'#fff'} : {bg:'#fff', color:'#667089'};
+    const d5 = seg(S.dataN===5000), d50 = seg(S.dataN===50000);
+    const dS = seg(density==='Compact'), dM = seg(density==='Comfortable'), dL = seg(density==='Spacious');
+
+    return {
+      isReady, isLoading, isError, hasRows: isReady && count > 0, noResults: isReady && count === 0,
+      matchStr: this._fmt(count || filtered.length), totalStr: this._fmt(total),
+      ignoredNote: ignored ? (ignored + ' condition' + (ignored>1?'s':'') + ' ignored (deleted field)') : null,
+      loadingCountStr: this._fmt(S.dataN),
+      items, views, headCols, colMenu, rows, topPad: start*rowH, botPad: Math.max(0, (count-end)*rowH),
+      nameW: S.nameW, headChecked, onHeadCheck,
+      nameSortGlyph: glyph('name'), onSortName: e => doSort('name', e), nameResize: e => startResize('__name', e),
+      skels: Array.from({length:14}, (_,i) => ({key:i, w1: 120+((i*37)%80), w2: 220+((i*53)%160), w3: 90+((i*29)%60)})),
+      scrollRef: el => { this._sc = el; if (el && this._ro) { this._ro.observe(el); if (S.viewH !== el.clientHeight) this.setState({viewH: el.clientHeight}); } },
+      onScroll: e => {
+        const t = e.target.scrollTop;
+        if (this._raf) return;
+        this._raf = requestAnimationFrame(() => { this._raf = null; this.setState({scrollTop:t}); });
+      },
+      noop: () => {}, stopClick: e => e.stopPropagation(),
+      closeMenus: () => { if (S.colMenuOpen) this.setState({colMenuOpen:false}); },
+      toggleColMenu: e => { e.stopPropagation(); this.setState(s => ({colMenuOpen: !s.colMenuOpen})); },
+      addRootCond: () => this._mutTree(t => t.children.push(this._newCond())),
+      addRootGroup: () => this._mutTree(t => t.children.push({kind:'group', id:this._mkid(), op:'OR', children:[this._newCond()]})),
+      clearFilters: () => this.setState({tree:{op:'AND',children:[]}, activeView:'v_all', reconDismissKey:null}),
+      savingView: S.savingView, notSavingView: !S.savingView, saveName: S.saveName,
+      startSave: () => this.setState({savingView:true, saveName:''}),
+      cancelSave: () => this.setState({savingView:false}),
+      onSaveName: e => this.setState({saveName: e.target.value}),
+      confirmSave: () => {
+        const name = S.saveName.trim() || 'Untitled view';
+        const id = 'v' + Date.now();
+        this.setState(s => ({views: s.views.concat([{id, name, tree: JSON.parse(JSON.stringify(s.tree))}]), activeView:id, savingView:false}));
+        this._toast('View “' + name + '” saved');
+      },
+      setRows5k: () => { if (S.dataN!==5000) { this.setState(Object.assign({dataN:5000}, clearSelState)); this.setState({dataN:5000}); this.state.dataN=5000; this._load(700); } },
+      setRows50k: () => { if (S.dataN!==50000) { this.setState(Object.assign({dataN:50000}, clearSelState)); this.state.dataN=50000; this._load(1100); } },
+      rows5kBg:d5.bg, rows5kColor:d5.color, rows50kBg:d50.bg, rows50kColor:d50.color,
+      denSBg:dS.bg, denSColor:dS.color, denMBg:dM.bg, denMColor:dM.color, denLBg:dL.bg, denLColor:dL.color,
+      setDenS: () => this.setState({density:'Compact'}),
+      setDenM: () => this.setState({density:'Comfortable'}),
+      setDenL: () => this.setState({density:'Spacious'}),
+      simError: () => { clearTimeout(this._lt); this.setState({phase:'error'}); },
+      retry: () => this._load(900),
+      colMenuOpen: S.colMenuOpen,
+      bulkBar: isReady && selCount > 0 && !reconBanner,
+      selCountStr: this._fmt(selCount),
+      showSelectAll: !allMode && selCount > 0 && selCount < filtered.length,
+      selectAllMatching: () => {
+        const ids = {}; for (const r of filtered) ids[r.id] = true;
+        this._cache.snapSet = null;
+        this.setState({selIds:ids, selMode:'all', snapCount:filtered.length, reconDismissKey:null});
+      },
+      clearSel: () => { this._cache.snapSet = null; this.setState(clearSelState); },
+      bulkCrm: () => this._toast(this._fmt(selCount) + ' companies queued for CRM import'),
+      bulkExport: () => this._toast('Exported ' + this._fmt(selCount) + ' rows to CSV'),
+      reconBanner, reconText,
+      reconAllStr: this._fmt(S.snapCount), reconMatchStr: this._fmt(matchingSelCount),
+      reconKeep: () => this.setState({reconDismissKey: filterKey}),
+      reconTrim: () => {
+        const snap = this._cache.snapSet, ids = {};
+        for (const r of filtered) if (snap && snap.has(r.id)) ids[r.id] = true;
+        this._cache.snapSet = null;
+        this.setState({selIds:ids, selMode:'ids', snapCount:0, reconDismissKey:null});
+      },
+      reconClear: () => { this._cache.snapSet = null; this.setState(clearSelState); },
+      toast: S.toast, sortSummary
+    };
+  }
+}
+</script>
+</body>
+</html>
