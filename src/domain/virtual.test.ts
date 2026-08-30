@@ -42,4 +42,24 @@ describe('computeWindow', () => {
     expect(w.start).toBe(0)
     expect(w.end).toBe(12)
   })
+
+  it('handles stale deep scrollTop against small count — start <= end', () => {
+    const w = computeWindow({ count: 100, rowHeight: 32, viewportHeight: 640, scrollTop: 100000 })
+    expect(w.start).toBeLessThanOrEqual(w.end)
+    expect(w.end).toBe(100)
+    // Content-height identity: spacers + rendered rows = total content height
+    const contentHeight = w.topPad + w.botPad + (w.end - w.start) * 32
+    expect(contentHeight).toBe(100 * 32)
+  })
+
+  it('handles stale deep scrollTop against zero count', () => {
+    const w = computeWindow({ count: 0, rowHeight: 32, viewportHeight: 640, scrollTop: 100000 })
+    expect(w).toEqual({ start: 0, end: 0, topPad: 0, botPad: 0 })
+  })
+
+  it('satisfies content-height identity in normal mid-scroll case', () => {
+    const w = computeWindow({ ...base, scrollTop: 3200 })
+    const contentHeight = w.topPad + w.botPad + (w.end - w.start) * 32
+    expect(contentHeight).toBe(5000 * 32)
+  })
 })

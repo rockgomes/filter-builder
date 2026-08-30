@@ -22,7 +22,11 @@ export function computeWindow({
   overscanAbove = 5,
   overscanBelow = 12,
 }: WindowInput): WindowRange {
-  const start = Math.max(0, Math.floor(scrollTop / rowHeight) - overscanAbove)
+  const maxStart = Math.max(0, count - 1)
+  const start = Math.min(
+    Math.max(0, Math.floor(scrollTop / rowHeight) - overscanAbove),
+    maxStart
+  )
   const visible = Math.ceil(viewportHeight / rowHeight)
   const end = Math.min(count, start + visible + overscanBelow)
   return {
