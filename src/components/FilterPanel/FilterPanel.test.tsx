@@ -42,7 +42,7 @@ describe('FilterPanel structure', () => {
 
   it('adds a condition to the root', async () => {
     const { dispatch, user } = setup()
-    await user.click(screen.getByRole('button', { name: /\+ Condition/ }))
+    await user.click(screen.getByRole('button', { name: 'Add condition' }))
     expect(dispatch).toHaveBeenCalledWith({ type: 'tree/addCondition', parentId: 'root' })
   })
 
@@ -159,6 +159,23 @@ describe('FilterPanel saving a view', () => {
 describe('FilterPanel empty tree', () => {
   it('renders the footer actions with no conditions', () => {
     setup({ tree: emptyTree() })
-    expect(screen.getByRole('button', { name: /\+ Condition/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add condition' })).toBeInTheDocument()
+  })
+})
+
+describe('FilterPanel add-condition buttons', () => {
+  // Both buttons read "+ Condition" on screen. They do different things, so their
+  // accessible names must differ or a screen-reader user cannot tell them apart.
+  it('distinguishes the root and group add-condition actions by accessible name', () => {
+    setup()
+    expect(screen.getByRole('button', { name: 'Add condition' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add condition to this group' })).toBeInTheDocument()
+  })
+
+  it('adds to the group, not the root, from the group button', async () => {
+    const { dispatch, state, user } = setup()
+    const groupId = state.tree.children[1].id
+    await user.click(screen.getByRole('button', { name: 'Add condition to this group' }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'tree/addCondition', parentId: groupId })
   })
 })
