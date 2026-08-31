@@ -26,12 +26,15 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/domain/**/*.ts'],
+    files: ['src/domain/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
         paths: [
           { name: 'react', message: 'src/domain must stay free of React.' },
           { name: 'react-dom', message: 'src/domain must stay free of React.' },
+        ],
+        patterns: [
+          { group: ['react/*'], message: 'src/domain must stay free of React.' },
         ],
       }],
     },
