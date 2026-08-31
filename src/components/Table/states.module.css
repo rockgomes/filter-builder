@@ -123,11 +123,15 @@
   flex: none;
 }
 
+/* Colours match the prototype exactly (Fieldset.dc.html:302) — no token
+ * covers this specific gradient, so literals are correct here (same call
+ * made for the skeleton checkbox's #e8ecf3 above). background-size must stay
+ * at 400px too: it sets the shimmer's travel distance, not just its tiling. */
 .bar {
   height: 11px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--border-row) 0px, var(--surface-header) 200px, var(--border-row) 400px);
-  background-size: 800px 100%;
+  background: linear-gradient(90deg, #e8ecf3 25%, #f4f6fa 50%, #e8ecf3 75%);
+  background-size: 400px 100%;
   animation: shimmer 1.3s linear infinite;
 }
 
