@@ -6,14 +6,34 @@
   left: 0;
   z-index: 60;
   width: max-content;
-  /* Never wider than the row it hangs off, so a 300px column cannot push it out
-   * of the panel. */
-  max-width: min(260px, 100%);
+  max-width: 260px;
   background: var(--surface-panel);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-surface);
   box-shadow: var(--shadow-menu);
   padding: 11px 12px;
+}
+
+/* Both triggers sit toward the right of their row, so hanging the panel from their
+ * right edge is what keeps it inside a 300px column. */
+.popRight {
+  left: auto;
+  right: 0;
+}
+
+/* Below this the column is narrower than the panel plus the space beside its
+ * trigger, so there is no alignment that fits: hanging off Clear overflows the left
+ * edge by 158px, and Discard by 56px, both measured. The trigger stops being the
+ * positioning context there (see .confirmAnchor) and the panel hangs from the row
+ * instead, where it always fits. The rows are close to the panel's width at that
+ * size, so it still reads as belonging to the row it came from. */
+@container filterrail (max-width: 483px) {
+  .pop,
+  .popRight {
+    left: 0;
+    right: auto;
+    max-width: 100%;
+  }
 }
 
 .question {

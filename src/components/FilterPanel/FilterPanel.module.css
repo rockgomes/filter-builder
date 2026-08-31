@@ -66,8 +66,8 @@
   gap: 6px;
   margin-left: 52px;
   flex-wrap: wrap;
-  /* Anchors the clear confirmation to the row, not to the button: a panel hanging
-   * off a button near the edge of a 300px column would open off-panel. */
+  /* Fallback anchor for the clear confirmation once the column is too narrow for it
+   * to hang off the button. See .confirmAnchor. */
   position: relative;
 }
 
@@ -230,7 +230,7 @@
   /* The actions are taller than the name alone, so without a floor the whole block
    * drops the moment you touch a filter. Held at the actions' height. */
   min-height: 24px;
-  /* Same reason as .footer: the discard confirmation hangs off the row. */
+  /* Same fallback role as .footer, for the discard confirmation. */
   position: relative;
 }
 
@@ -267,6 +267,21 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
+}
+
+/* Positioning context for the confirmation that hangs off the control inside it, so
+ * the question appears at the button that raised it rather than at the start of the
+ * row. Below the narrow threshold it stops being one, handing the job back to the
+ * row, which is the only anchor a 300px column has room for. */
+.confirmAnchor {
+  position: relative;
+  display: inline-flex;
+}
+
+@container filterrail (max-width: 483px) {
+  .confirmAnchor {
+    position: static;
+  }
 }
 
 .discardLink {

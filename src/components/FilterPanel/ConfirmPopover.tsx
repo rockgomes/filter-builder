@@ -5,17 +5,17 @@ export interface ConfirmPopoverProps {
   /** What is about to happen, stated in full so the button can stay short. */
   question: string
   confirmLabel: string
+  /** Which edge of the trigger the panel hangs from. */
+  align?: 'left' | 'right'
   onConfirm: () => void
   onCancel: () => void
 }
 
 /**
- * A question hanging off the row that raised it, rather than a dialog over the whole
- * app. Clearing the filter and discarding edits are small, frequent actions that
- * happen to be unrecoverable; a modal would treat them as bigger than they are, and
- * an inline swap would widen a row that has to survive a 300px column. The row is
- * the anchor rather than the button so a trigger near the edge cannot open it
- * off-panel.
+ * A question hanging off the control that raised it, rather than a dialog over the
+ * whole app. Clearing the filter and discarding edits are small, frequent actions
+ * that happen to be unrecoverable; a modal would treat them as bigger than they are,
+ * and an inline swap would widen a row that has to survive a 300px column.
  *
  * The cancel is focused, not the confirm: if this opened by accident, the key you
  * reach for should be the one that undoes it.
@@ -23,6 +23,7 @@ export interface ConfirmPopoverProps {
 export function ConfirmPopover({
   question,
   confirmLabel,
+  align = 'left',
   onConfirm,
   onCancel,
 }: ConfirmPopoverProps) {
@@ -34,7 +35,7 @@ export function ConfirmPopover({
 
   return (
     <div
-      className={styles.pop}
+      className={`${styles.pop} ${align === 'right' ? styles.popRight : ''}`.trim()}
       role="dialog"
       aria-label={question}
       onClick={(event) => event.stopPropagation()}

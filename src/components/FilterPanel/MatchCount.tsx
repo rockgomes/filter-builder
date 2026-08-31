@@ -63,32 +63,37 @@ export function MatchCount({
               ) : null}
 
               {/* Throws away every edit since the last save, with nothing to get
-               * them back, so it asks first. */}
-              <button
-                type="button"
-                className={styles.discardLink}
-                aria-haspopup="dialog"
-                aria-expanded={pendingConfirm === 'discard'}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  dispatch({
-                    type: 'confirm/set',
-                    target: pendingConfirm === 'discard' ? null : 'discard',
-                  })
-                }}
-              >
-                Discard
-              </button>
-            </span>
-          ) : null}
+               * them back, so it asks first. The question hangs off this button
+               * rather than the row: a question that opens somewhere else reads as
+               * being about something else. */}
+              <span className={styles.confirmAnchor}>
+                <button
+                  type="button"
+                  className={styles.discardLink}
+                  aria-haspopup="dialog"
+                  aria-expanded={pendingConfirm === 'discard'}
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    dispatch({
+                      type: 'confirm/set',
+                      target: pendingConfirm === 'discard' ? null : 'discard',
+                    })
+                  }}
+                >
+                  Discard
+                </button>
 
-          {pendingConfirm === 'discard' ? (
-            <ConfirmPopover
-              question="Discard your unsaved edits? This cannot be undone."
-              confirmLabel="Discard edits"
-              onConfirm={() => dispatch({ type: 'view/discard' })}
-              onCancel={() => dispatch({ type: 'confirm/set', target: null })}
-            />
+                {pendingConfirm === 'discard' ? (
+                  <ConfirmPopover
+                    question="Discard your unsaved edits? This cannot be undone."
+                    confirmLabel="Discard edits"
+                    align="right"
+                    onConfirm={() => dispatch({ type: 'view/discard' })}
+                    onCancel={() => dispatch({ type: 'confirm/set', target: null })}
+                  />
+                ) : null}
+              </span>
+            </span>
           ) : null}
         </div>
       ) : null}

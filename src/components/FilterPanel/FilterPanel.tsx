@@ -116,32 +116,33 @@ export function FilterPanel({
            * once. It asks before doing it: there is no undo, and it now sits one
            * small gap from a button people press repeatedly. */}
           {hasConditions ? (
-            <button
-              type="button"
-              className={styles.dangerBtn}
-              aria-haspopup="dialog"
-              aria-expanded={state.pendingConfirm === 'clear'}
-              onClick={(event) => {
-                event.stopPropagation()
-                dispatch({
-                  type: 'confirm/set',
-                  target: state.pendingConfirm === 'clear' ? null : 'clear',
-                })
-              }}
-            >
-              Clear filters
-            </button>
-          ) : null}
+            <span className={styles.confirmAnchor}>
+              <button
+                type="button"
+                className={styles.dangerBtn}
+                aria-haspopup="dialog"
+                aria-expanded={state.pendingConfirm === 'clear'}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  dispatch({
+                    type: 'confirm/set',
+                    target: state.pendingConfirm === 'clear' ? null : 'clear',
+                  })
+                }}
+              >
+                Clear filters
+              </button>
 
-          {/* Anchored to the row rather than the button, so it cannot be pushed off
-           * the edge of a narrow column. */}
-          {state.pendingConfirm === 'clear' ? (
-            <ConfirmPopover
-              question={clearQuestion}
-              confirmLabel="Clear all"
-              onConfirm={() => dispatch({ type: 'tree/clear' })}
-              onCancel={() => dispatch({ type: 'confirm/set', target: null })}
-            />
+              {state.pendingConfirm === 'clear' ? (
+                <ConfirmPopover
+                  question={clearQuestion}
+                  confirmLabel="Clear all"
+                  align="right"
+                  onConfirm={() => dispatch({ type: 'tree/clear' })}
+                  onCancel={() => dispatch({ type: 'confirm/set', target: null })}
+                />
+              ) : null}
+            </span>
           ) : null}
         </div>
 
