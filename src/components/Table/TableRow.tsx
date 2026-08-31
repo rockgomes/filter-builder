@@ -34,7 +34,7 @@ function TableRowImpl({
 
   return (
     <div role="row" className={className} style={{ height: rowHeight }}>
-      <div className={styles.checkboxCell}>
+      <div role="cell" className={styles.checkboxCell}>
         <input
           type="checkbox"
           className={styles.checkbox}
@@ -56,7 +56,7 @@ function TableRowImpl({
           aria-label={`Select ${company.name}`}
         />
       </div>
-      <div className={styles.nameCell} style={{ width: nameWidth }}>
+      <div role="cell" className={styles.nameCell} style={{ width: nameWidth }}>
         {company.name}
       </div>
       {columns.map((column) => (

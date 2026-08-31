@@ -32,7 +32,7 @@ export function TableCell({ company, column }: TableCellProps) {
     .join(' ')
 
   return (
-    <div className={className} style={{ width: column.w }}>
+    <div role="cell" className={className} style={{ width: column.w }}>
       {cellContent(company, column)}
     </div>
   )
