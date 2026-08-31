@@ -1,4 +1,5 @@
 import type { Action } from '../../state/reducer'
+import { Chevron } from '../icons/Chevron'
 import styles from './FilterPanel.module.css'
 
 export interface SaveMenuProps {
@@ -41,7 +42,8 @@ export function SaveMenu({ canUpdate, viewName, open, dispatch }: SaveMenuProps)
           dispatch({ type: 'saveMenu/set', open: !open })
         }}
       >
-        Save <span aria-hidden="true">▾</span>
+        Save
+        <Chevron open={open} />
       </button>
 
       {open ? (

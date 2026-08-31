@@ -38,6 +38,9 @@ export interface AppState {
   drafts: Record<string, Group>
   colMenuOpen: boolean
   saveMenuOpen: boolean
+  viewMenuOpen: boolean
+  /** Id of the view a delete confirmation is open for, or null. */
+  pendingDelete: string | null
   savingView: boolean
   saveName: string
   toast: string | null
@@ -75,6 +78,8 @@ export type Action =
   | { type: 'columns/resize'; key: string; width: number }
   | { type: 'columns/setMenuOpen'; open: boolean }
   | { type: 'saveMenu/set'; open: boolean }
+  | { type: 'viewMenu/set'; open: boolean }
+  | { type: 'view/confirmDelete'; viewId: string | null }
   | { type: 'rail/resize'; width: number }
   | { type: 'hitCounts/toggle' }
   | { type: 'density/set'; density: Density }
@@ -163,6 +168,8 @@ export function initialState(): AppState {
     drafts: {},
     colMenuOpen: false,
     saveMenuOpen: false,
+    viewMenuOpen: false,
+    pendingDelete: null,
     savingView: false,
     saveName: '',
     toast: null,
@@ -270,6 +277,8 @@ export function reducer(state: AppState, action: Action): AppState {
         drafts,
         toast: 'View saved',
         saveMenuOpen: false,
+    viewMenuOpen: false,
+    pendingDelete: null,
       }
     }
 
@@ -297,6 +306,7 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         views,
         drafts,
+        pendingDelete: null,
         activeView: state.activeView === action.viewId ? null : state.activeView,
       }
     }
@@ -373,6 +383,12 @@ export function reducer(state: AppState, action: Action): AppState {
     }
     case 'hitCounts/toggle':
       return { ...state, showHitCounts: !state.showHitCounts }
+    case 'viewMenu/set':
+      return state.viewMenuOpen === action.open
+        ? state
+        : { ...state, viewMenuOpen: action.open, pendingDelete: null }
+    case 'view/confirmDelete':
+      return { ...state, pendingDelete: action.viewId }
     case 'saveMenu/set':
       return state.saveMenuOpen === action.open ? state : { ...state, saveMenuOpen: action.open }
     case 'columns/setMenuOpen':

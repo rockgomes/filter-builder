@@ -33,6 +33,7 @@ export function App() {
       onClick={() => {
         dispatch({ type: 'columns/setMenuOpen', open: false })
         dispatch({ type: 'saveMenu/set', open: false })
+        dispatch({ type: 'viewMenu/set', open: false })
       }}
     >
       <TopBar state={state} dispatch={dispatch} />

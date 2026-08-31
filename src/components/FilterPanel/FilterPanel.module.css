@@ -34,6 +34,9 @@
 }
 
 .saveBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   height: 28px;
   padding: 0 11px;
   border-radius: 7px;
@@ -351,4 +354,12 @@
 .saveBtn:disabled {
   opacity: 0.45;
   cursor: default;
+}
+
+/* Held-open state, driven off aria-expanded so the visual and the accessible state
+ * cannot disagree. */
+.saveBtn[aria-expanded='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface-panel);
 }
