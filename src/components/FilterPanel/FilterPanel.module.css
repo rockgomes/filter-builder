@@ -10,6 +10,10 @@
   align-items: baseline;
   gap: 10px;
   flex-wrap: wrap;
+  /* Held at the height of the Save button that appears here the moment a filter
+   * is touched. Without a floor the row grew from 24px to 29px and pushed every
+   * condition below it down. */
+  min-height: 30px;
 }
 
 .matchCount {
