@@ -46,6 +46,13 @@ export function Table({
   // measured with a ResizeObserver rather than window.innerHeight — the app
   // can be embedded in an iframe, where the two differ. The reducer no-ops
   // when the height is unchanged, so this observer can't feedback-loop.
+  //
+  // The container only exists in the DOM while phase === 'ready' (it's gated
+  // below), so this effect must re-run on every phase transition — mount
+  // (loading → ready), unmount (ready → error), and remount (error → ready)
+  // — to attach to the newly-rendered element each time. `dispatch` alone
+  // never changes (useReducer's dispatch is stable), so without `state.phase`
+  // here the effect would run exactly once, before the container exists.
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
@@ -55,7 +62,7 @@ export function Table({
     })
     observer.observe(el)
     return () => observer.disconnect()
-  }, [dispatch])
+  }, [dispatch, state.phase])
 
   const columns: ColumnDef[] = useMemo(
     () =>
@@ -81,20 +88,22 @@ export function Table({
   return (
     <div className={styles.tableArea}>
       {state.phase === 'ready' && (
-        <div ref={scrollRef} className={styles.scrollContainer} onScroll={onScroll}>
-          <TableHeader
-            sorts={state.sorts}
-            nameWidth={state.nameWidth}
-            columns={columns}
-            dispatch={dispatch}
-            startResize={startResize}
-            headerChecked={headerChecked}
-            onToggleWindow={() => dispatch({ type: 'selection/toggleWindow', windowIds })}
-          />
+        <div ref={scrollRef} className={styles.scrollContainer} role="table" onScroll={onScroll}>
+          <div role="rowgroup">
+            <TableHeader
+              sorts={state.sorts}
+              nameWidth={state.nameWidth}
+              columns={columns}
+              dispatch={dispatch}
+              startResize={startResize}
+              headerChecked={headerChecked}
+              onToggleWindow={() => dispatch({ type: 'selection/toggleWindow', windowIds })}
+            />
+          </div>
 
           {sorted.length > 0 ? (
-            <>
-              <div style={{ height: range.topPad }} />
+            <div role="rowgroup">
+              <div style={{ height: range.topPad }} aria-hidden="true" />
               {windowRows.map((company, i) => (
                 <TableRow
                   key={company.id}
@@ -108,8 +117,8 @@ export function Table({
                   dispatch={dispatch}
                 />
               ))}
-              <div style={{ height: range.botPad }} />
-            </>
+              <div style={{ height: range.botPad }} aria-hidden="true" />
+            </div>
           ) : (
             <EmptyState onClear={() => dispatch({ type: 'tree/clear' })} />
           )}
