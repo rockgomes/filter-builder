@@ -1,0 +1,17 @@
+.statusBar {
+  height: 28px;
+  flex: none;
+  background: var(--surface-header);
+  border-top: 1px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-5);
+}
+
+.spacer {
+  flex: 1;
+}

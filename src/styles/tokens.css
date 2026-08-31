@@ -1,0 +1,73 @@
+:root {
+  /* Accent */
+  --accent: #4c5fd5;
+  --accent-hover: #3a49b0;
+  --accent-tint-1: #eef0fb;
+  --accent-tint-2: #f4f5fc;
+  --accent-tint-3: #f7f8fd;
+  --accent-border: #c3caf0;
+  --accent-border-soft: #dcdfef;
+  --accent-on-dark: #a5b0f0;
+
+  /* Ink */
+  --ink-1: #232936;
+  --ink-2: #46516b;
+  --ink-3: #566179;
+  --ink-4: #667089;
+  --ink-5: #8b96ad;
+  --ink-6: #aab3c5;
+
+  /* Surfaces */
+  --surface-page: #eef1f6;
+  --surface-panel: #ffffff;
+  --surface-header: #f7f9fc;
+  --surface-zebra: #f8fafc;
+  --surface-group: #f9fafd;
+  --surface-input: #fafbfd;
+  --surface-hover: #f4f5fa;
+
+  /* Borders */
+  --border-strong: #e2e7f0;
+  --border-soft: #e9edf4;
+  --border-row: #f0f3f8;
+  --border-condition: #ebebef;
+  --border-dashed: #c8d0e0;
+
+  /* Amber — degraded state */
+  --amber-text: #b45309;
+  --amber-text-deep: #7c5410;
+  --amber-mark: #d97706;
+  --amber-bg: #fdf8ee;
+  --amber-bg-strip: #fdf6ea;
+  --amber-bg-tag: #f5e6c8;
+  --amber-border: #ecd9b8;
+  --amber-border-strip: #f0dfc0;
+  --amber-border-deep: #e2cf9f;
+
+  /* Semantic */
+  --crm-bg: #e7f4ec;
+  --crm-text: #1d7a45;
+  --error-bg: #fbf1f1;
+  --error-text: #b91c1c;
+  --error-border: #e8c7c7;
+
+  /* Dark */
+  --dark-bg: #232936;
+  --dark-border: #414d66;
+  --dark-hover: #2e374a;
+
+  /* Type */
+  --font-ui: 'Instrument Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Radii */
+  --radius-control: 6px;
+  --radius-control-lg: 8px;
+  --radius-surface: 10px;
+  --radius-surface-lg: 14px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(28, 35, 54, 0.05);
+  --shadow-menu: 0 8px 28px rgba(35, 41, 54, 0.12);
+  --shadow-bulk: 0 10px 30px rgba(35, 41, 54, 0.3);
+}

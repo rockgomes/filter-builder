@@ -1,0 +1,9 @@
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  background: var(--surface-page);
+  overflow-y: auto;
+}
+

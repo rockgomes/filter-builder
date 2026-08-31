@@ -1,0 +1,61 @@
+.strip {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--amber-bg-strip);
+  border-bottom: 1px solid var(--amber-border-strip);
+  color: var(--amber-text-deep);
+  font-size: 12.5px;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--amber-bg-tag);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.keepBtn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--amber-border-deep);
+  background: var(--surface-panel);
+  color: var(--amber-text-deep);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.trimBtn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: none;
+  background: var(--amber-text-deep);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clearBtn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--amber-border-deep);
+  background: none;
+  color: var(--amber-text-deep);
+  font-size: 12px;
+  cursor: pointer;
+}
