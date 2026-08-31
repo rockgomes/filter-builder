@@ -73,6 +73,7 @@ export function FilterPanel({ state, dispatch, rows, filtered, ignoredCount, now
             type="button"
             className={styles.dashedBtn}
             onClick={() => dispatch({ type: 'tree/addCondition', parentId: 'root' })}
+            aria-label="Add condition"
           >
             + Condition
           </button>

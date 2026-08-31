@@ -77,8 +77,9 @@ export function GroupRow({ group, parentId, isFirst, joinerOp, small, hitCounts,
           type="button"
           className={styles.addCondBtn}
           onClick={() => dispatch({ type: 'tree/addCondition', parentId: group.id })}
+          aria-label="Add condition to this group"
         >
-          + condition
+          + Condition
         </button>
       </div>
     </div>
