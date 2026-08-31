@@ -176,16 +176,13 @@ describe('FilterPanel deleted field', () => {
 })
 
 describe('FilterPanel saving a view', () => {
-  it('swaps the button for a name input and saves', async () => {
-    const { dispatch, user } = setup({ savingView: true, saveName: 'My view' })
-    await user.click(screen.getByRole('button', { name: 'Save' }))
-    expect(dispatch).toHaveBeenCalledWith({ type: 'view/confirmSave' })
-  })
-
-  it('cancels without saving', async () => {
-    const { dispatch, user } = setup({ savingView: true })
-    await user.click(screen.getByRole('button', { name: 'Cancel' }))
-    expect(dispatch).toHaveBeenCalledWith({ type: 'view/cancelSave' })
+  // The naming step lives in SaveViewDialog now. What the panel owes is that its
+  // trigger stays where it was: the inline row used to replace the Save button
+  // with a second one further left, mid-action.
+  it('keeps the Save button in place while the dialog is open', () => {
+    const base = { ...initialState(), phase: 'ready' as const }
+    setup({ ...base, activeView: 'v_icp', drafts: { v_icp: base.tree }, savingView: true })
+    expect(screen.getByRole('button', { name: /^Save/ })).toBeInTheDocument()
   })
 })
 

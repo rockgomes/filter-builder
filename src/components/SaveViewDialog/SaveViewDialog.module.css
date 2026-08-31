@@ -1,0 +1,140 @@
+/* Dim rather than black: the filter you just built stays legible behind the
+ * dialog, because the name you are about to type describes it. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(35, 41, 54, 0.34);
+  animation: backdropIn 120ms ease-out;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 340px;
+  background: var(--surface-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-surface-lg);
+  box-shadow: var(--shadow-menu);
+  padding: 18px;
+  animation: dialogIn 140ms ease-out;
+}
+
+.title {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-1);
+}
+
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.label {
+  font-size: 12px;
+  color: var(--ink-4);
+}
+
+.counter {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-4);
+}
+
+.input {
+  width: 100%;
+  height: 32px;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-control-lg);
+  padding: 0 10px;
+  font-size: 13px;
+  background: var(--surface-input);
+  color: var(--ink-1);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.check input {
+  accent-color: var(--accent);
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Confirm sits last, on the right: the action you are here for is the one the eye
+ * lands on at the end of the line. */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.cancel {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--radius-control-lg);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-panel);
+  color: var(--ink-4);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.cancel:hover {
+  color: var(--ink-2);
+  border-color: var(--ink-4);
+}
+
+.confirm {
+  height: 30px;
+  padding: 0 14px;
+  border-radius: var(--radius-control-lg);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirm:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* An empty name has nothing to save, so Save says so rather than saving something
+ * called "Untitled view" the user never asked for. */
+.confirm:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@keyframes backdropIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}

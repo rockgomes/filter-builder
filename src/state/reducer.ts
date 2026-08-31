@@ -43,6 +43,9 @@ export interface AppState {
   pendingDelete: string | null
   savingView: boolean
   saveName: string
+  /** The save dialog's "pin it" choice. Off by default: saving should not put a
+   *  view in the top bar unless that was asked for. */
+  savePinned: boolean
   toast: string | null
   /** Bumped on every `toast/show`, even when the message text is unchanged —
    *  raising the same message twice must restart the 2600ms auto-dismiss
@@ -65,6 +68,7 @@ export type Action =
   | { type: 'view/startSave' }
   | { type: 'view/cancelSave' }
   | { type: 'view/setName'; name: string }
+  | { type: 'view/setSavePinned'; pinned: boolean }
   | { type: 'view/confirmSave' }
   | { type: 'view/save' }
   | { type: 'view/discard' }
@@ -179,6 +183,7 @@ export function initialState(): AppState {
     pendingDelete: null,
     savingView: false,
     saveName: '',
+    savePinned: false,
     toast: null,
     toastNonce: 0,
   }
@@ -267,6 +272,7 @@ export function reducer(state: AppState, action: Action): AppState {
         // follow you. Same for an open save menu.
         savingView: false,
         saveName: '',
+        savePinned: false,
         saveMenuOpen: false,
         selection: { ...state.selection, dismissKey: null },
       }
@@ -340,11 +346,13 @@ export function reducer(state: AppState, action: Action): AppState {
       }
     }
     case 'view/startSave':
-      return { ...state, savingView: true, saveName: '', saveMenuOpen: false }
+      return { ...state, savingView: true, saveName: '', savePinned: false, saveMenuOpen: false }
     case 'view/cancelSave':
       return { ...state, savingView: false }
     case 'view/setName':
       return { ...state, saveName: action.name }
+    case 'view/setSavePinned':
+      return { ...state, savePinned: action.pinned }
     case 'view/confirmSave': {
       const name = state.saveName.trim().slice(0, MAX_VIEW_NAME_LENGTH) || 'Untitled view'
       const id = `v_${Date.now()}_${state.views.length}`
@@ -354,12 +362,13 @@ export function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         drafts,
-        // Deliberately unpinned: pinning is a choice made in the Saved views menu,
-        // not something saving does on your behalf.
-        views: [...state.views, { id, name, tree: cloneTree(state.tree) }],
+        // Pinned only when the dialog asked for it. Saving on its own never puts a
+        // view in the top bar; that was the surprise this replaced.
+        views: [...state.views, { id, name, tree: cloneTree(state.tree), pinned: state.savePinned }],
         activeView: id,
         savingView: false,
         saveName: '',
+        savePinned: false,
         toast: `View “${name}” saved`,
         toastNonce: state.toastNonce + 1,
       }

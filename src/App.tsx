@@ -7,6 +7,7 @@ import { FilterPanel } from './components/FilterPanel/FilterPanel'
 import { Table } from './components/Table/Table'
 import { ReconciliationBanner } from './components/ReconciliationBanner/ReconciliationBanner'
 import { StatusBar } from './components/StatusBar/StatusBar'
+import { SaveViewDialog } from './components/SaveViewDialog/SaveViewDialog'
 import styles from './App.module.css'
 
 export function App() {
@@ -90,6 +91,12 @@ export function App() {
       </div>
 
       <StatusBar rowCount={sorted.length} sortSummary={formatSortSummary(state.sorts)} />
+
+      {/* Rendered here, not inside the panel: the panel scrolls, and a dialog that
+       * scrolls with the thing behind it is not a dialog. */}
+      {state.savingView ? (
+        <SaveViewDialog saveName={state.saveName} pinned={state.savePinned} dispatch={dispatch} />
+      ) : null}
     </div>
   )
 }
