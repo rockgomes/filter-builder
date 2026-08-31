@@ -1,4 +1,5 @@
 import { useFieldset } from './state/useFieldset'
+import { useRailResize } from './hooks/useRailResize'
 import { formatSortSummary } from './domain/format'
 import { needsReconciliation, stillMatchingCount } from './domain/selection'
 import { TopBar } from './components/TopBar/TopBar'
@@ -12,6 +13,7 @@ export function App() {
   const {
     state, dispatch, sorted, sortedIds, filtered, filterKey, range, rowHeight, rows, ignoredCount, now,
   } = useFieldset()
+  const rail = useRailResize(dispatch)
 
   const reconciling = needsReconciliation(state.selection, filtered.length, filterKey)
 
@@ -22,7 +24,7 @@ export function App() {
       {/* Above the rail breakpoint .body is a row: the filter sits in a fixed-width
         * rail on the left and everything about the table stacks to its right. Below
         * it, .body is a column and the layout is exactly what it was before. */}
-      <div className={styles.body}>
+      <div className={styles.body} style={{ ["--rail-width" as string]: `${state.railWidth}px` }}>
         <div className={styles.rail}>
           <FilterPanel
             state={state}
@@ -33,6 +35,19 @@ export function App() {
             now={now}
           />
         </div>
+
+        <div
+          className={styles.railHandle}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize the filter panel"
+          aria-valuenow={state.railWidth}
+          aria-valuemin={rail.min}
+          aria-valuemax={rail.max}
+          tabIndex={0}
+          onMouseDown={rail.startResize}
+          onKeyDown={(event) => rail.onKeyDown(event, state.railWidth)}
+        />
 
         <div className={styles.main}>
           {reconciling && (

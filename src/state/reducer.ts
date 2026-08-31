@@ -26,6 +26,10 @@ export interface AppState {
   scrollTop: number
   viewportHeight: number
   density: Density
+  /** Width of the filter rail in px. Only has an effect above the rail breakpoint. */
+  railWidth: number
+  /** Per-condition hit counts. Off by default — they are diagnostic, not part of the query. */
+  showHitCounts: boolean
   colMenuOpen: boolean
   savingView: boolean
   saveName: string
@@ -58,6 +62,8 @@ export type Action =
   | { type: 'columns/reorder'; from: string; to: string }
   | { type: 'columns/resize'; key: string; width: number }
   | { type: 'columns/setMenuOpen'; open: boolean }
+  | { type: 'rail/resize'; width: number }
+  | { type: 'hitCounts/toggle' }
   | { type: 'density/set'; density: Density }
   | { type: 'scroll/set'; scrollTop: number }
   | { type: 'viewport/set'; height: number }
@@ -69,6 +75,58 @@ export type Action =
   | { type: 'selection/trim'; filteredIds: number[] }
   | { type: 'toast/show'; message: string }
   | { type: 'toast/hide' }
+
+export const RAIL_DEFAULT_WIDTH = 450
+export const RAIL_MIN_WIDTH = 300
+export const RAIL_MAX_WIDTH = 680
+const RAIL_STORAGE_KEY = 'fieldset.railWidth'
+const HITS_STORAGE_KEY = 'fieldset.showHitCounts'
+
+export function clampRailWidth(width: number): number {
+  if (!Number.isFinite(width)) return RAIL_DEFAULT_WIDTH
+  return Math.min(RAIL_MAX_WIDTH, Math.max(RAIL_MIN_WIDTH, Math.round(width)))
+}
+
+/**
+ * The only persisted state in the app. Reads are wrapped because accessing
+ * localStorage throws outright in some privacy modes, and a stored value can be
+ * absent, non-numeric, or out of range if the clamp bounds ever change.
+ */
+export function readStoredRailWidth(): number {
+  try {
+    const raw = globalThis.localStorage?.getItem(RAIL_STORAGE_KEY)
+    if (raw === null || raw === undefined) return RAIL_DEFAULT_WIDTH
+    const parsed = Number(raw)
+    if (!Number.isFinite(parsed)) return RAIL_DEFAULT_WIDTH
+    return clampRailWidth(parsed)
+  } catch {
+    return RAIL_DEFAULT_WIDTH
+  }
+}
+
+export function readStoredHitCounts(): boolean {
+  try {
+    return globalThis.localStorage?.getItem(HITS_STORAGE_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+export function writeStoredHitCounts(show: boolean): void {
+  try {
+    globalThis.localStorage?.setItem(HITS_STORAGE_KEY, String(show))
+  } catch {
+    // Storage unavailable — the preference simply resets next load.
+  }
+}
+
+export function writeStoredRailWidth(width: number): void {
+  try {
+    globalThis.localStorage?.setItem(RAIL_STORAGE_KEY, String(width))
+  } catch {
+    // Storage unavailable — the rail simply resets next load.
+  }
+}
 
 export function initialState(): AppState {
   return {
@@ -87,6 +145,8 @@ export function initialState(): AppState {
     scrollTop: 0,
     viewportHeight: 600,
     density: 'Compact',
+    railWidth: readStoredRailWidth(),
+    showHitCounts: readStoredHitCounts(),
     colMenuOpen: false,
     savingView: false,
     saveName: '',
@@ -191,6 +251,12 @@ export function reducer(state: AppState, action: Action): AppState {
       if (action.key === '__name') return { ...state, nameWidth: width }
       return { ...state, widths: { ...state.widths, [action.key]: width } }
     }
+    case 'rail/resize': {
+      const width = clampRailWidth(action.width)
+      return state.railWidth === width ? state : { ...state, railWidth: width }
+    }
+    case 'hitCounts/toggle':
+      return { ...state, showHitCounts: !state.showHitCounts }
     case 'columns/setMenuOpen':
       return { ...state, colMenuOpen: action.open }
 

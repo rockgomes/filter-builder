@@ -24,6 +24,9 @@ export function FilterPanel({ state, dispatch, rows, filtered, ignoredCount, now
   // each condition its own count.
   const treeSignature = JSON.stringify(state.tree)
   const hitCounts = useMemo(() => {
+    // Off by default. Skipping the memo entirely also skips a full-dataset scan
+    // per condition, so the counts cost nothing at all when they are hidden.
+    if (!state.showHitCounts) return {}
     const counts: Record<string, number> = {}
     const visit = (node: TreeNode) => {
       if (node.kind === 'group') node.children.forEach(visit)
@@ -32,7 +35,7 @@ export function FilterPanel({ state, dispatch, rows, filtered, ignoredCount, now
     state.tree.children.forEach(visit)
     return counts
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.dataVersion, treeSignature, rows, now])
+  }, [state.dataVersion, treeSignature, rows, now, state.showHitCounts])
 
   return (
     <div className={styles.panel}>
@@ -81,6 +84,17 @@ export function FilterPanel({ state, dispatch, rows, filtered, ignoredCount, now
             + Group ( OR )
           </button>
         </div>
+
+        {/* Lives in the panel rather than a top-bar menu: it only affects what the
+          * panel shows, so it belongs where its effect is visible. */}
+        <label className={styles.hitsToggle}>
+          <input
+            type="checkbox"
+            checked={state.showHitCounts}
+            onChange={() => dispatch({ type: 'hitCounts/toggle' })}
+          />
+          Show hit count per condition
+        </label>
       </div>
     </div>
   )

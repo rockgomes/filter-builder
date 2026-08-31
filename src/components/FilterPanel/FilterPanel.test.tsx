@@ -97,13 +97,25 @@ describe('FilterPanel condition editing', () => {
     expect(screen.queryByLabelText(/Value/)).toBeNull()
   })
 
-  it('reports a live hit count for each condition', () => {
+  // Deliberate behaviour change: hit counts used to always render. They are
+  // diagnostic rather than part of the query, so they are now off by default and
+  // revealed by a toggle in the panel footer.
+  it('reports a live hit count for each condition once the toggle is on', () => {
+    const tree: Group = {
+      kind: 'group', id: 'root', op: 'AND',
+      children: [{ kind: 'cond', id: 'c1', field: 'industry', op: 'is', value: 'SaaS', value2: '' }],
+    }
+    setup({ tree, showHitCounts: true })
+    expect(screen.getByText(/\d+ hits?$/)).toBeInTheDocument()
+  })
+
+  it('hides hit counts by default', () => {
     const tree: Group = {
       kind: 'group', id: 'root', op: 'AND',
       children: [{ kind: 'cond', id: 'c1', field: 'industry', op: 'is', value: 'SaaS', value2: '' }],
     }
     setup({ tree })
-    expect(screen.getByText(/\d+ hits?$/)).toBeInTheDocument()
+    expect(screen.queryByText(/\d+ hits?$/)).toBeNull()
   })
 
   it('removes a condition', async () => {
@@ -177,5 +189,25 @@ describe('FilterPanel add-condition buttons', () => {
     const groupId = state.tree.children[1].id
     await user.click(screen.getByRole('button', { name: 'Add condition to this group' }))
     expect(dispatch).toHaveBeenCalledWith({ type: 'tree/addCondition', parentId: groupId })
+  })
+})
+
+describe('FilterPanel hit-count toggle', () => {
+  const label = /Show hit count per condition/
+
+  it('offers the toggle unchecked by default', () => {
+    setup()
+    expect(screen.getByLabelText(label)).not.toBeChecked()
+  })
+
+  it('reflects the on state', () => {
+    setup({ showHitCounts: true })
+    expect(screen.getByLabelText(label)).toBeChecked()
+  })
+
+  it('dispatches on toggle', async () => {
+    const { dispatch, user } = setup()
+    await user.click(screen.getByLabelText(label))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'hitCounts/toggle' })
   })
 })

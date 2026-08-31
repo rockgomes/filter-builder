@@ -157,3 +157,25 @@
   width: 34px;
   flex: none;
 }
+
+/* Quiet by default: a diagnostic switch should not compete with the filter itself. */
+.hitsToggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--ink-4);
+  cursor: pointer;
+  user-select: none;
+}
+
+.hitsToggle input {
+  accent-color: var(--accent);
+  margin: 0;
+  cursor: pointer;
+}
+
+.hitsToggle:hover {
+  color: var(--ink-3);
+}

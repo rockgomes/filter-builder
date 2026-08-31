@@ -36,7 +36,8 @@ rail to its content and ignored the panel's own padding.
 
 ## Decisions
 
-1. **Default rail width 490px.** Min 300, max 680.
+1. **Default rail width 450px.** Min 300, max 680. (Was 490 while hit counts were
+   always shown; hiding them by default freed ~70px per row.)
 2. **Rail applies above 1100px only.** Below that, today's stacked layout is
    unchanged. The rail therefore never has to survive 320px — the narrow-width
    bugs that bit three times already cannot recur here.
