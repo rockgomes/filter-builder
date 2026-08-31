@@ -211,3 +211,40 @@ describe('FilterPanel hit-count toggle', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: 'hitCounts/toggle' })
   })
 })
+
+describe('FilterPanel empty-filter affordances', () => {
+  const empty = { tree: emptyTree() }
+
+  it('offers Clear filters when there are conditions', () => {
+    setup()
+    expect(screen.getByRole('button', { name: 'Clear filters' })).toBeInTheDocument()
+  })
+
+  it('clears the whole filter', async () => {
+    const { dispatch, user } = setup()
+    await user.click(screen.getByRole('button', { name: 'Clear filters' }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'tree/clear' })
+  })
+
+  // Nothing to save, nothing to clear, and nothing to count — so none of the three
+  // appear. This is what makes "All companies" show a bare panel.
+  it('hides Clear filters when the filter is empty', () => {
+    setup(empty)
+    expect(screen.queryByRole('button', { name: 'Clear filters' })).toBeNull()
+  })
+
+  it('hides Save as view when the filter is empty', () => {
+    setup(empty)
+    expect(screen.queryByRole('button', { name: 'Save as view' })).toBeNull()
+  })
+
+  it('hides the hit-count toggle when the filter is empty', () => {
+    setup(empty)
+    expect(screen.queryByLabelText(/Show hit count per condition/)).toBeNull()
+  })
+
+  it('still offers the add-condition actions when empty', () => {
+    setup(empty)
+    expect(screen.getByRole('button', { name: 'Add condition' })).toBeInTheDocument()
+  })
+})

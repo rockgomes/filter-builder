@@ -17,7 +17,14 @@ export interface FilterPanelProps {
   now: number
 }
 
-export function FilterPanel({ state, dispatch, rows, filtered, ignoredCount, now }: FilterPanelProps) {
+export function FilterPanel({
+  state,
+  dispatch,
+  rows,
+  filtered,
+  ignoredCount,
+  now,
+}: FilterPanelProps) {
   // Hit counts must not be recomputed inline per render per condition — at 50k rows
   // that is a full dataset scan per condition on every keystroke. Compute them once
   // per render pass, keyed on the data version and the serialized tree, and hand
@@ -37,6 +44,8 @@ export function FilterPanel({ state, dispatch, rows, filtered, ignoredCount, now
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.dataVersion, treeSignature, rows, now, state.showHitCounts])
 
+  const hasConditions = state.tree.children.length > 0
+
   return (
     <div className={styles.panel}>
       <MatchCount
@@ -45,6 +54,7 @@ export function FilterPanel({ state, dispatch, rows, filtered, ignoredCount, now
         ignoredCount={ignoredCount}
         savingView={state.savingView}
         saveName={state.saveName}
+        hasConditions={hasConditions}
         dispatch={dispatch}
       />
       <div className={styles.rows}>
@@ -69,7 +79,7 @@ export function FilterPanel({ state, dispatch, rows, filtered, ignoredCount, now
               hitCounts={hitCounts}
               dispatch={dispatch}
             />
-          )
+          ),
         )}
         <div className={styles.footer}>
           <button
@@ -80,21 +90,28 @@ export function FilterPanel({ state, dispatch, rows, filtered, ignoredCount, now
           >
             + Condition
           </button>
-          <button type="button" className={styles.dashedBtn} onClick={() => dispatch({ type: 'tree/addGroup' })}>
+          <button
+            type="button"
+            className={styles.dashedBtn}
+            onClick={() => dispatch({ type: 'tree/addGroup' })}
+          >
             + Group ( OR )
           </button>
         </div>
 
         {/* Lives in the panel rather than a top-bar menu: it only affects what the
-          * panel shows, so it belongs where its effect is visible. */}
-        <label className={styles.hitsToggle}>
-          <input
-            type="checkbox"
-            checked={state.showHitCounts}
-            onChange={() => dispatch({ type: 'hitCounts/toggle' })}
-          />
-          Show hit count per condition
-        </label>
+         * panel shows, so it belongs where its effect is visible. Hidden until
+         * there is a condition to count. */}
+        {hasConditions ? (
+          <label className={styles.hitsToggle}>
+            <input
+              type="checkbox"
+              checked={state.showHitCounts}
+              onChange={() => dispatch({ type: 'hitCounts/toggle' })}
+            />
+            Show hit count per condition
+          </label>
+        ) : null}
       </div>
     </div>
   )

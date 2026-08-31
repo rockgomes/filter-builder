@@ -8,10 +8,20 @@ export interface MatchCountProps {
   ignoredCount: number
   savingView: boolean
   saveName: string
+  /** False when the filter is empty: there is nothing to save and nothing to clear. */
+  hasConditions: boolean
   dispatch: (action: Action) => void
 }
 
-export function MatchCount({ count, total, ignoredCount, savingView, saveName, dispatch }: MatchCountProps) {
+export function MatchCount({
+  count,
+  total,
+  ignoredCount,
+  savingView,
+  saveName,
+  hasConditions,
+  dispatch,
+}: MatchCountProps) {
   return (
     <div className={styles.matchRow}>
       <span className={styles.matchCount}>{count}</span>
@@ -22,13 +32,28 @@ export function MatchCount({ count, total, ignoredCount, savingView, saveName, d
         </span>
       ) : null}
       <div className={styles.spacer} />
+      {/* An empty filter has nothing to save and nothing to clear, so neither
+       * action appears — which is also why "All companies" shows no buttons. */}
       {savingView ? (
         <SaveViewInline saveName={saveName} dispatch={dispatch} />
-      ) : (
-        <button type="button" className={styles.saveBtn} onClick={() => dispatch({ type: 'view/startSave' })}>
-          Save as view
-        </button>
-      )}
+      ) : hasConditions ? (
+        <>
+          <button
+            type="button"
+            className={styles.clearBtn}
+            onClick={() => dispatch({ type: 'tree/clear' })}
+          >
+            Clear filters
+          </button>
+          <button
+            type="button"
+            className={styles.saveBtn}
+            onClick={() => dispatch({ type: 'view/startSave' })}
+          >
+            Save as view
+          </button>
+        </>
+      ) : null}
     </div>
   )
 }

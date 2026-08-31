@@ -125,11 +125,11 @@ a sort or a selection; width survives reload; arrow keys work.
 `between` (two inputs), enum single, enum `any_of` (chips), boolean, date, and a
 deleted-field condition. Then the same set nested inside a group.
 
-## Phase 4 — Close out
+## Phase 4 — Close out (DEFERRED)
 
-Retake the portfolio screenshot (`headless Chrome, --force-device-scale-factor=2`)
-and replace the Webflow asset on the Fieldset experiment entry, since the layout
-in the current one will be stale.
+Retaking the portfolio screenshot is deferred until saved-view management lands.
+That work changes the top bar and the panel header, so a screenshot taken now
+would be stale before it was published.
 
 ---
 
