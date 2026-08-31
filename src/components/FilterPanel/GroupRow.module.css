@@ -97,11 +97,23 @@
   background: var(--accent-tint-3);
 }
 
+/* No slot column to clear, so nothing to indent past. An empty group has no rows
+ * to line up with in the first place. The narrow layout below is the other case. */
+.addCondFlush {
+  margin-left: 0;
+}
+
 /* Groups sit in the same leading-slot layout as conditions and stack with them. */
 @container filterrail (max-width: 483px) {
   .row {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
+  }
+
+  /* The joiner is a pill above each row here, not a 34px column beside it, so the
+   * nested boxes start at the group's padding edge and the button follows them. */
+  .addCondBtn {
+    margin-left: 0;
   }
 }
