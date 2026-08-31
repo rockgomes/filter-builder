@@ -54,6 +54,8 @@ export interface SortSpec {
 }
 
 export interface SavedView {
+  /** Pinned views render as chips in the top bar; the rest live in the dropdown. */
+  pinned?: boolean
   id: string
   name: string
   tree: Group
