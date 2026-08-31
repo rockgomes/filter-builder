@@ -7,8 +7,11 @@
 
 .box {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  /* Deliberately not wrapping: the controls wrap inside .boxContent, and the
+   * remove button sits outside it so a narrow column cannot drop the × onto a
+   * line of its own. Same shape as a group, where the × is pinned to the box's
+   * top-right rather than carried along in the flow. */
+  align-items: flex-start;
   gap: 5px;
   padding: 4px 6px;
   border: 1px solid var(--border-condition);
@@ -21,11 +24,23 @@
   flex: 0 1 auto;
 }
 
+.boxContent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
 .boxSmall {
   padding: 3px 5px;
   /* Fieldset.dc.html:198 — the nested condition box uses 7px, not the 6px
      control radius token. */
   border-radius: 7px;
+  gap: 4px;
+}
+
+.boxSmall .boxContent {
   gap: 4px;
 }
 
@@ -67,6 +82,11 @@
   height: 24px;
 }
 
+/* Nested controls are 24px, so the nudge is 1px rather than 2px. */
+.boxSmall .removeBtn {
+  margin-top: 1px;
+}
+
 .mono {
   font-family: var(--font-mono);
 }
@@ -106,9 +126,13 @@
   white-space: nowrap;
 }
 
+/* Top-aligned, then nudged so it reads as centred against the 26px control row
+ * it sits beside. On one line that is indistinguishable from centring; on two it
+ * stays at the top corner instead of drifting to the middle. */
 .removeBtn {
   width: 22px;
   height: 22px;
+  margin-top: 2px;
   flex: none;
   border: none;
   background: none;

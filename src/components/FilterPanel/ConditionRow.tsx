@@ -98,56 +98,59 @@ export function ConditionRow({
       <div
         className={`${styles.box} ${small ? styles.boxSmall : ''} ${!field ? styles.boxWarn : ''}`.trim()}
       >
-        <select
-          aria-label="Field"
-          className={`${styles.select} ${controlClass}`.trim()}
-          value={cond.field}
-          onChange={(event) =>
-            dispatch({
-              type: 'tree/patchCondition',
-              id: cond.id,
-              patch: fieldChangePatch(event.target.value),
-            })
-          }
-        >
-          {!field ? <option value={cond.field}>{`${cond.field} (deleted)`}</option> : null}
-          {FIELDS.map((f) => (
-            <option key={f.key} value={f.key}>
-              {f.label}
-            </option>
-          ))}
-        </select>
+        {/* The controls wrap; the remove button, outside this, does not. */}
+        <div className={styles.boxContent}>
+          <select
+            aria-label="Field"
+            className={`${styles.select} ${controlClass}`.trim()}
+            value={cond.field}
+            onChange={(event) =>
+              dispatch({
+                type: 'tree/patchCondition',
+                id: cond.id,
+                patch: fieldChangePatch(event.target.value),
+              })
+            }
+          >
+            {!field ? <option value={cond.field}>{`${cond.field} (deleted)`}</option> : null}
+            {FIELDS.map((f) => (
+              <option key={f.key} value={f.key}>
+                {f.label}
+              </option>
+            ))}
+          </select>
 
-        {!field ? (
-          <span className={styles.warnText}>field was deleted — condition ignored</span>
-        ) : (
-          <>
-            <select
-              aria-label="Operator"
-              className={`${styles.select} ${styles.selectOperator} ${controlClass}`.trim()}
-              value={cond.op}
-              onChange={(event) =>
-                dispatch({
-                  type: 'tree/patchCondition',
-                  id: cond.id,
-                  patch: opChangePatch(cond, event.target.value as OpId, cond.field),
-                })
-              }
-            >
-              {OPS[field.type].map(([id, label]) => (
-                <option key={id} value={id}>
-                  {label}
-                </option>
-              ))}
-            </select>
-            <ValueEditor cond={cond} field={field} dispatch={dispatch} small={small} />
-            {hits !== undefined ? (
-              <span className={styles.hits}>
-                {hits} {hits === 1 ? 'hit' : 'hits'}
-              </span>
-            ) : null}
-          </>
-        )}
+          {!field ? (
+            <span className={styles.warnText}>field was deleted — condition ignored</span>
+          ) : (
+            <>
+              <select
+                aria-label="Operator"
+                className={`${styles.select} ${styles.selectOperator} ${controlClass}`.trim()}
+                value={cond.op}
+                onChange={(event) =>
+                  dispatch({
+                    type: 'tree/patchCondition',
+                    id: cond.id,
+                    patch: opChangePatch(cond, event.target.value as OpId, cond.field),
+                  })
+                }
+              >
+                {OPS[field.type].map(([id, label]) => (
+                  <option key={id} value={id}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+              <ValueEditor cond={cond} field={field} dispatch={dispatch} small={small} />
+              {hits !== undefined ? (
+                <span className={styles.hits}>
+                  {hits} {hits === 1 ? 'hit' : 'hits'}
+                </span>
+              ) : null}
+            </>
+          )}
+        </div>
 
         <button
           type="button"
