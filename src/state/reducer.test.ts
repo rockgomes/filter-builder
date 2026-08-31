@@ -94,6 +94,22 @@ describe('view selection', () => {
     expect(s.savingView).toBe(false)
   })
 
+  it('holds a pending confirmation and lets it be dismissed', () => {
+    const asking = reducer(ready(), { type: 'confirm/set', target: 'clear' })
+    expect(asking.pendingConfirm).toBe('clear')
+    expect(reducer(asking, { type: 'confirm/set', target: null }).pendingConfirm).toBe(null)
+  })
+
+  it('closes the question when the action it guarded runs', () => {
+    const asking = reducer(ready(), { type: 'confirm/set', target: 'clear' })
+    expect(reducer(asking, { type: 'tree/clear' }).pendingConfirm).toBe(null)
+  })
+
+  it('does not carry a pending question to another view', () => {
+    const asking = reducer(ready(), { type: 'confirm/set', target: 'discard' })
+    expect(reducer(asking, { type: 'view/select', viewId: 'v_all' }).pendingConfirm).toBe(null)
+  })
+
   it('leaves a new view out of the top bar unless asked', () => {
     const s = reducer({ ...ready(), savingView: true, saveName: 'Q' }, { type: 'view/confirmSave' })
     expect(s.views.at(-1)!.pinned).toBe(false)

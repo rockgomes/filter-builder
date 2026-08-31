@@ -41,6 +41,12 @@ export interface AppState {
   viewMenuOpen: boolean
   /** Id of the view a delete confirmation is open for, or null. */
   pendingDelete: string | null
+  /**
+   * Which destructive filter action is awaiting confirmation, or null. Both throw
+   * away work that cannot be recovered, and both now sit one small gap from a
+   * button you press often, so neither fires on the first click.
+   */
+  pendingConfirm: 'clear' | 'discard' | null
   savingView: boolean
   saveName: string
   /** The save dialog's "pin it" choice. Off by default: saving should not put a
@@ -69,6 +75,7 @@ export type Action =
   | { type: 'view/cancelSave' }
   | { type: 'view/setName'; name: string }
   | { type: 'view/setSavePinned'; pinned: boolean }
+  | { type: 'confirm/set'; target: 'clear' | 'discard' | null }
   | { type: 'view/confirmSave' }
   | { type: 'view/save' }
   | { type: 'view/discard' }
@@ -181,6 +188,7 @@ export function initialState(): AppState {
     saveMenuOpen: false,
     viewMenuOpen: false,
     pendingDelete: null,
+    pendingConfirm: null,
     savingView: false,
     saveName: '',
     savePinned: false,
@@ -254,6 +262,7 @@ export function reducer(state: AppState, action: Action): AppState {
         tree: emptyTree(),
         activeView: 'v_all',
         drafts,
+        pendingConfirm: null,
         selection: { ...state.selection, dismissKey: null },
       }
     }
@@ -274,6 +283,7 @@ export function reducer(state: AppState, action: Action): AppState {
         saveName: '',
         savePinned: false,
         saveMenuOpen: false,
+        pendingConfirm: null,
         selection: { ...state.selection, dismissKey: null },
       }
     }
@@ -310,6 +320,7 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         tree: cloneTree(view.tree),
         drafts,
+        pendingConfirm: null,
         selection: { ...state.selection, dismissKey: null },
       }
     }
@@ -353,6 +364,9 @@ export function reducer(state: AppState, action: Action): AppState {
       return { ...state, saveName: action.name }
     case 'view/setSavePinned':
       return { ...state, savePinned: action.pinned }
+    case 'confirm/set':
+      if (state.pendingConfirm === action.target) return state
+      return { ...state, pendingConfirm: action.target }
     case 'view/confirmSave': {
       const name = state.saveName.trim().slice(0, MAX_VIEW_NAME_LENGTH) || 'Untitled view'
       const id = `v_${Date.now()}_${state.views.length}`

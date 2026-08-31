@@ -66,6 +66,9 @@
   gap: 6px;
   margin-left: 52px;
   flex-wrap: wrap;
+  /* Anchors the clear confirmation to the row, not to the button: a panel hanging
+   * off a button near the edge of a 300px column would open off-panel. */
+  position: relative;
 }
 
 /* No slot column, so nothing to indent past: the pill layout, and any layout with
@@ -227,6 +230,8 @@
   /* The actions are taller than the name alone, so without a floor the whole block
    * drops the moment you touch a filter. Held at the actions' height. */
   min-height: 24px;
+  /* Same reason as .footer: the discard confirmation hangs off the row. */
+  position: relative;
 }
 
 /* One unit, so Unsaved, Save and Discard never separate across lines: Save would be

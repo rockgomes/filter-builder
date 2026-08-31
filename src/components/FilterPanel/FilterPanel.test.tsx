@@ -238,10 +238,13 @@ describe('FilterPanel empty-filter affordances', () => {
     expect(screen.getByRole('button', { name: 'Clear filters' })).toBeInTheDocument()
   })
 
-  it('clears the whole filter', async () => {
+  // Was a one-click wipe with no undo, sitting one 6px gap from a button people
+  // press repeatedly. It asks now.
+  it('asks before clearing rather than clearing', async () => {
     const { dispatch, user } = setup()
     await user.click(screen.getByRole('button', { name: 'Clear filters' }))
-    expect(dispatch).toHaveBeenCalledWith({ type: 'tree/clear' })
+    expect(dispatch).toHaveBeenCalledWith({ type: 'confirm/set', target: 'clear' })
+    expect(dispatch).not.toHaveBeenCalledWith({ type: 'tree/clear' })
   })
 
   // Nothing to save, nothing to clear, and nothing to count — so none of the three
@@ -324,10 +327,37 @@ describe('FilterPanel view actions', () => {
     expect(screen.queryByRole('button', { name: 'Discard' })).toBeNull()
   })
 
-  it('discards unsaved edits', async () => {
+  it('asks before discarding rather than discarding', async () => {
     const { dispatch, user } = dirty()
     await user.click(screen.getByRole('button', { name: 'Discard' }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'confirm/set', target: 'discard' })
+    expect(dispatch).not.toHaveBeenCalledWith({ type: 'view/discard' })
+  })
+
+  // The confirm is named differently from the trigger that raised it. Repeating the
+  // name leaves two controls that sound identical and do different things.
+  it('clears the filter once the question is answered', async () => {
+    const { dispatch, user } = setup({ pendingConfirm: 'clear' })
+    await user.click(screen.getByRole('button', { name: 'Clear all' }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'tree/clear' })
+  })
+
+  it('discards once the question is answered', async () => {
+    const { dispatch, user } = dirty({ pendingConfirm: 'discard' })
+    await user.click(screen.getByRole('button', { name: 'Discard edits' }))
     expect(dispatch).toHaveBeenCalledWith({ type: 'view/discard' })
+  })
+
+  it('backs out of the question without acting', async () => {
+    const { dispatch, user } = dirty({ pendingConfirm: 'discard' })
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'confirm/set', target: null })
+    expect(dispatch).not.toHaveBeenCalledWith({ type: 'view/discard' })
+  })
+
+  it('names how much the clear would remove', () => {
+    setup({ pendingConfirm: 'clear' })
+    expect(screen.getByRole('dialog')).toHaveAccessibleName(/all 4 conditions/)
   })
 
   // The escape-hatch view cannot be overwritten, so saving there can only mean

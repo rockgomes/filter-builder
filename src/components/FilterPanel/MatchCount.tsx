@@ -1,5 +1,6 @@
 import type { Action } from '../../state/reducer'
 import { SaveMenu } from './SaveMenu'
+import { ConfirmPopover } from './ConfirmPopover'
 import styles from './FilterPanel.module.css'
 
 export interface MatchCountProps {
@@ -15,6 +16,8 @@ export interface MatchCountProps {
   canUpdateActiveView: boolean
   /** True when the open view has unsaved edits. */
   isDirty: boolean
+  /** Which destructive action is awaiting confirmation, or null. */
+  pendingConfirm: 'clear' | 'discard' | null
   dispatch: (action: Action) => void
 }
 
@@ -27,6 +30,7 @@ export function MatchCount({
   activeViewName,
   canUpdateActiveView,
   isDirty,
+  pendingConfirm,
   dispatch,
 }: MatchCountProps) {
   return (
@@ -58,14 +62,33 @@ export function MatchCount({
                 />
               ) : null}
 
+              {/* Throws away every edit since the last save, with nothing to get
+               * them back, so it asks first. */}
               <button
                 type="button"
                 className={styles.discardLink}
-                onClick={() => dispatch({ type: 'view/discard' })}
+                aria-haspopup="dialog"
+                aria-expanded={pendingConfirm === 'discard'}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  dispatch({
+                    type: 'confirm/set',
+                    target: pendingConfirm === 'discard' ? null : 'discard',
+                  })
+                }}
               >
                 Discard
               </button>
             </span>
+          ) : null}
+
+          {pendingConfirm === 'discard' ? (
+            <ConfirmPopover
+              question="Discard your unsaved edits? This cannot be undone."
+              confirmLabel="Discard edits"
+              onConfirm={() => dispatch({ type: 'view/discard' })}
+              onCancel={() => dispatch({ type: 'confirm/set', target: null })}
+            />
           ) : null}
         </div>
       ) : null}

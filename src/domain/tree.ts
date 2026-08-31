@@ -98,6 +98,16 @@ export function walkTree(tree: Group, fn: (node: TreeNode, parent: Group) => voi
   }
 }
 
+/** Every condition in the tree, at any depth. The clear confirmation names a number,
+ *  and "remove everything" is easier to weigh when you know how much everything is. */
+export function countConditions(tree: Group): number {
+  let n = 0
+  walkTree(tree, (node) => {
+    if (node.kind === 'cond') n += 1
+  })
+  return n
+}
+
 function cond(field: string, op: Cond['op'], value: string | string[] = '', value2 = ''): Cond {
   return { kind: 'cond', id: makeId(), field, op, value, value2 }
 }
