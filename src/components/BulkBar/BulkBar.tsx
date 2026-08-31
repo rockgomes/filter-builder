@@ -31,7 +31,7 @@ export function BulkBar({
        *  - .secondary outlined — peer actions on the same selection
        *  - .quiet     text only — changes the selection rather than acting on it */}
       {showSelectAll ? (
-        <button type="button" className={styles.quiet} onClick={onSelectAll}>
+        <button type="button" className={`${styles.quiet} ${styles.quietAccent}`} onClick={onSelectAll}>
           {`Select all ${formatNumber(matchingCount)} matching`}
         </button>
       ) : null}

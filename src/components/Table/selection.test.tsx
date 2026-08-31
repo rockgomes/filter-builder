@@ -93,11 +93,21 @@ describe('header checkbox partial state', () => {
     expect(box().indeterminate).toBe(false)
   })
 
-  it('stays unchecked and not partial when only rows outside the window are selected', () => {
+  // Deliberate behaviour change: this previously asserted the tick cleared when the
+  // selected rows were off-screen. That made the indicator vanish as soon as you
+  // scrolled past your own selection, which read as a bug. The partial tick now
+  // means "a selection exists that this box does not fully cover".
+  it('keeps the partial tick when the selected rows have been scrolled past', () => {
     const win = computeWindow({ count: ROWS.length, rowHeight: 32, viewportHeight: 320, scrollTop: 0 })
     const outside = IDS.filter((id) => !IDS.slice(win.start, win.end).includes(id))
     expect(outside.length).toBeGreaterThan(0)
     setup(sel(outside))
+    expect(box().checked).toBe(false)
+    expect(box().indeterminate).toBe(true)
+  })
+
+  it('clears the partial tick only when the selection is empty', () => {
+    setup(sel([]))
     expect(box().checked).toBe(false)
     expect(box().indeterminate).toBe(false)
   })
