@@ -29,13 +29,14 @@ changes, and it stays that way.
 Three selects = 349px before gaps, padding, hit count and remove button.
 A complete condition row is **~430px**.
 
-**Therefore:** 450px is the narrowest rail where a plain condition stays on one
-line. Anything under that wraps, which is acceptable but should be the user's
-choice rather than the default.
+**Therefore:** the content needs ~430px, and the panel adds 16px of padding each
+side, so the rail must be **490px** for a plain condition to stay on one line.
+Measured on the Phase 1 build: 450 wrapped, because the first estimate sized the
+rail to its content and ignored the panel's own padding.
 
 ## Decisions
 
-1. **Default rail width 450px.** Min 300, max 640.
+1. **Default rail width 490px.** Min 300, max 680.
 2. **Rail applies above 1100px only.** Below that, today's stacked layout is
    unchanged. The rail therefore never has to survive 320px — the narrow-width
    bugs that bit three times already cannot recur here.
@@ -91,14 +92,14 @@ measures its own container so this should be fine, but confirm no feedback loop.
 `useColumnResize` already does this exact job for table columns — pointer down,
 track deltas on `window`, clamp, dispatch, clean up on unmount. Mirror it.
 
-- New state `railWidth: number`, new action `rail/resize`, clamped 300–640 in the
+- New state `railWidth: number`, new action `rail/resize`, clamped 300–680 in the
   reducer (the clamp lives in the reducer, matching how column widths work; do not
   duplicate it in the hook).
 - Handle is 7px, `cursor: col-resize`, `preventDefault` + `stopPropagation`.
 - Keyboard accessible: focusable separator with `role="separator"`,
   `aria-orientation="vertical"`, arrow keys nudge by 16px. The mouse-only version
   would be the only unreachable control in the app.
-- Persist to `localStorage` on change, read on init, fall back to 450 if absent or
+- Persist to `localStorage` on change, read on init, fall back to 490 if absent or
   unparseable. Wrap reads in try/catch — private browsing throws.
 
 **Verify:** drag changes width and stops at both clamps; a complete drag leaves no
@@ -119,7 +120,7 @@ a sort or a selection; width survives reload; arrow keys work.
   is the tightest the user can drag to.
 - Match count and "Save as view" stack rather than sitting on one line.
 
-**Verify each condition type at 300 / 450 / 640:** text, number, number with
+**Verify each condition type at 300 / 490 / 680:** text, number, number with
 `between` (two inputs), enum single, enum `any_of` (chips), boolean, date, and a
 deleted-field condition. Then the same set nested inside a group.
 
@@ -134,7 +135,7 @@ in the current one will be stale.
 ## Definition of done
 
 - `npm run typecheck && lint && test && build` all pass.
-- Every condition type verified at 300 / 450 / 640, and nested in a group.
+- Every condition type verified at 300 / 490 / 680, and nested in a group.
 - No horizontal page scroll at any width from 320 to 1920.
 - Below 1100px the layout is unchanged from today.
 - Rail width persists across reload and survives a corrupt stored value.

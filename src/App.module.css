@@ -7,3 +7,52 @@
   overflow-y: auto;
 }
 
+
+/* --- Filter rail ---------------------------------------------------------
+ * Below RAIL_BREAKPOINT (1100px) .body is a plain column and this whole block
+ * is inert, so the stacked layout is byte-for-byte what it was before the rail
+ * existed. The rail only exists at widths where the space it needs is actually
+ * spare, which is why it never has to survive 320px. */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.rail {
+  flex: none;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  /* Without this the table cannot shrink below its content and the row overflows. */
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (min-width: 1100px) {
+  .body {
+    flex-direction: row;
+  }
+
+  .rail {
+    /* 490, not 450: a condition row needs ~430px and the panel adds 16px of
+     * padding each side, so the rail has to be the content width plus its own
+     * padding or every text and enum condition wraps.
+     * Phase 2 replaces this default with a value driven by state. */
+    width: var(--rail-width, 490px);
+    overflow-y: auto;
+    background: var(--surface-panel);
+    border-right: 1px solid var(--border-strong);
+  }
+
+  /* The panel's bottom border is the divider in the stacked layout. In the rail
+   * the divider is the rail's own right border, so drop the horizontal one. */
+  .rail > * {
+    border-bottom: none;
+  }
+}
