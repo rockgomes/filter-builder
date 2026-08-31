@@ -32,6 +32,7 @@ export function LoadingState({ count }: LoadingStateProps) {
       <div className={styles.headerStub} />
       {skeletonRows().map((row) => (
         <div key={row.key} className={styles.skeletonRow}>
+          <div className={styles.skeletonCheckbox} />
           <div className={styles.bar} style={{ width: row.w1 }} />
           <div className={styles.bar} style={{ width: row.w2 }} />
           <div className={styles.bar} style={{ width: row.w3 }} />

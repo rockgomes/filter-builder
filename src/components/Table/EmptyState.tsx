@@ -12,6 +12,7 @@ export function EmptyState({ onClear }: EmptyStateProps) {
     <div className={styles.emptyWrap}>
       <div className={`${styles.tile} ${styles.emptyTile}`}>0</div>
       <div className={styles.heading}>No companies match this filter</div>
+      <div className={styles.emptyDetail}>Loosen a condition, or start over.</div>
       <button type="button" className={styles.clearFiltersBtn} onClick={onClear}>
         Clear filters
       </button>
