@@ -4,7 +4,7 @@ import { generateCompanies } from '../domain/generateCompanies'
 import { sortRows } from '../domain/sort'
 import { computeWindow } from '../domain/virtual'
 import { ROW_HEIGHT, type Company } from '../domain/types'
-import { initialState, reducer } from './reducer'
+import { initialState, reducer, writeStoredHitCounts, writeStoredRailWidth } from './reducer'
 
 const LOAD_MS: Record<number, number> = { 5000: 700, 50000: 1100 }
 
@@ -30,6 +30,15 @@ export function useFieldset() {
   // Keyed on toastNonce, not state.toast: raising the SAME message again must
   // still restart the full 2600ms window, but a string that's unchanged
   // wouldn't re-trigger this effect. toastNonce is bumped on every raise.
+  // The rail width is the only thing in the app that outlives a reload.
+  useEffect(() => {
+    writeStoredRailWidth(state.railWidth)
+  }, [state.railWidth])
+
+  useEffect(() => {
+    writeStoredHitCounts(state.showHitCounts)
+  }, [state.showHitCounts])
+
   useEffect(() => {
     if (!state.toast) return
     const timer = setTimeout(() => dispatch({ type: 'toast/hide' }), 2600)

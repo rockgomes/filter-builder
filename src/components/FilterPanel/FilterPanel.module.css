@@ -93,11 +93,29 @@
   gap: 7px;
 }
 
+/* The footer lines up with the left edge of the condition boxes, not the panel.
+ * In the slot layout the boxes start 52px in — past the 44px joiner slot and its
+ * 8px gap — so the footer matches. The indent is applied only when there is a
+ * slot column to account for: see .footerFlush below. */
 .footer {
   display: flex;
   gap: 6px;
   margin-left: 52px;
   flex-wrap: wrap;
+}
+
+/* No slot column, so nothing to indent past: the pill layout, and any layout with
+ * no conditions at all. Both put the boxes (or nothing) at the panel's edge. */
+.footerFlush,
+.footerFlush + .hitsToggle {
+  margin-left: 0;
+}
+
+@container filterrail (max-width: 483px) {
+  .footer,
+  .footer + .hitsToggle {
+    margin-left: 0;
+  }
 }
 
 .dashedBtn {
@@ -156,4 +174,83 @@
 .joinerBlank {
   width: 34px;
   flex: none;
+}
+
+/* Quiet by default: a diagnostic switch should not compete with the filter itself. */
+.hitsToggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  /* Shares the footer's left edge so the bottom of the panel reads as one column. */
+  margin-left: 52px;
+  font-size: 12px;
+  color: var(--ink-4);
+  cursor: pointer;
+  user-select: none;
+}
+
+.hitsToggle input {
+  accent-color: var(--accent);
+  margin: 0;
+  cursor: pointer;
+}
+
+.hitsToggle:hover {
+  color: var(--ink-3);
+}
+
+/* --- Narrow filter column -------------------------------------------------
+ * The leading 44px slot holding "Where" and the AND/OR pills costs 51px with its
+ * gap. That is affordable when the column is wide and not when it is narrow, so
+ * below the threshold the slot stops being a column and the joiner becomes a pill
+ * sitting above its row instead.
+ *
+ * 484px is where the arithmetic flips, measured on a deployed build rather than
+ * estimated: the condition box renders at 400px, the slot and its 8px gap take 52,
+ * and the panel adds 32 of padding. Below that the slot layout wraps, so the pill
+ * layout takes over. */
+@container filterrail (max-width: 483px) {
+  .leadSlot {
+    width: auto;
+    text-align: left;
+  }
+
+  .joinerPill {
+    width: auto;
+    min-width: 40px;
+    height: 22px;
+    padding: 0 9px;
+  }
+
+  .joinerStatic,
+  .joinerBlank {
+    width: auto;
+  }
+
+  .joinerBlank {
+    display: none;
+  }
+}
+
+/* Sits beside "Save as view" and shares its height, but stays quiet — it throws
+ * work away, so it should not look like the primary action. */
+.clearBtn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-panel);
+  color: var(--ink-4);
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* --ink-4, not --ink-5: a border that identifies a control needs 3:1 and --ink-5
+ * is 2.97:1 on this surface. The contrast guard catches this. */
+.clearBtn:hover {
+  color: var(--ink-2);
+  border-color: var(--ink-4);
 }

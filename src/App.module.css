@@ -7,3 +7,100 @@
   overflow-y: auto;
 }
 
+
+/* --- Filter rail ---------------------------------------------------------
+ * Below RAIL_BREAKPOINT (1100px) .body is a plain column and this whole block
+ * is inert, so the stacked layout is byte-for-byte what it was before the rail
+ * existed. The rail only exists at widths where the space it needs is actually
+ * spare, which is why it never has to survive 320px. */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.rail {
+  flex: none;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  /* Without this the table cannot shrink below its content and the row overflows. */
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (min-width: 1100px) {
+  .body {
+    flex-direction: row;
+  }
+
+  .rail {
+    /* A container, not a media query: the rail's width is dragged, so the panel
+     * has to respond to its own size rather than the viewport's. */
+    container-type: inline-size;
+    container-name: filterrail;
+    /* Measured, not guessed: a condition box renders at 400px. With the leading
+     * slot it needs 484; without it (pill layout) 432. Turning hit counts on adds
+     * ~70px per row, which wraps the count to a second line unless the rail is
+     * dragged wider — acceptable, since that toggle is opt-in and the wrap is
+     * legible.
+     * 500 is the default so the wide layout — leading slot for "Where" and the
+     * AND/OR pills — fits without wrapping, which needs 484. Drag below 484 and a
+     * container query swaps the slot for a pill above each row instead.
+     * The real value comes from state; this default only applies before hydration. */
+    width: var(--rail-width, 500px);
+    overflow-y: auto;
+    background: var(--surface-panel);
+    border-right: 1px solid var(--border-strong);
+  }
+
+  /* The panel's bottom border is the divider in the stacked layout. In the rail
+   * the divider is the rail's own right border, so drop the horizontal one. */
+  .rail > * {
+    border-bottom: none;
+  }
+}
+
+/* The handle only exists in the row layout; in the stacked layout there is no
+ * vertical edge for it to sit on. */
+.railHandle {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .railHandle {
+    display: block;
+    position: relative;
+    flex: none;
+    width: 7px;
+    margin-left: -7px;
+    cursor: col-resize;
+    background: none;
+    border: none;
+    z-index: 5;
+  }
+
+  /* The grip is always visible: a divider you can drag should say so without
+   * needing to be hovered first. */
+  .railHandle::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    width: 3px;
+    height: 28px;
+    margin-top: -14px;
+    border-radius: 2px;
+    background: var(--accent-border);
+  }
+
+  .railHandle:hover::after,
+  .railHandle:focus-visible::after {
+    background: var(--accent);
+  }
+}
