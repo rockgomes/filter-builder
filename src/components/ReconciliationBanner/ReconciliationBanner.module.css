@@ -1,6 +1,8 @@
 .strip {
   flex: none;
   display: flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
   align-items: center;
   gap: 10px;
   padding: 8px 16px;
