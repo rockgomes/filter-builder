@@ -63,8 +63,10 @@ const PAIRINGS: Pairing[] = [
   { what: 'deleted-field warning glyph', fg: token('amber-text'), bg: token('surface-panel') },
 
   // Pairings that already passed. Guarded so a future edit cannot regress them.
-  { what: 'bulk bar label on dark', fg: token('ink-5'), bg: token('dark-bg') },
-  { what: 'bulk bar accent on dark', fg: token('accent-on-dark'), bg: token('dark-bg') },
+  { what: 'bulk bar count label', fg: '#ffffff', bg: token('dark-bg') },
+  { what: 'bulk bar quiet button', fg: token('accent-on-dark'), bg: token('dark-bg') },
+  { what: 'bulk bar primary button', fg: '#ffffff', bg: token('accent') },
+  { what: 'bulk bar secondary button', fg: '#ffffff', bg: token('dark-bg') },
   { what: 'primary body text', fg: token('ink-1'), bg: token('surface-panel') },
   { what: 'table mono cells', fg: token('ink-2'), bg: token('surface-panel') },
   { what: 'table mono cells on zebra rows', fg: token('ink-2'), bg: token('surface-zebra') },
@@ -98,8 +100,9 @@ describe('WCAG AA contrast of rendered colour pairings', () => {
 describe('low-contrast tokens are not used on light surfaces', () => {
   const FAILS_ON_LIGHT = ['ink-5', 'ink-6', 'amber-mark']
 
-  /** --ink-5 on the near-black bulk bar is 5.87:1. It is asserted in PAIRINGS above. */
-  const ALLOWED = new Set(['BulkBar/BulkBar.module.css:--ink-5'])
+  /** No component may use these on a light surface. Empty because the one former
+   *  exception — --ink-5 on the near-black bulk bar — was removed in the UI pass. */
+  const ALLOWED = new Set<string>()
 
   const files = globSync('src/components/**/*.module.css')
 

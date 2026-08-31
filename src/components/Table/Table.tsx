@@ -77,6 +77,9 @@ export function Table({
   const windowRows = sorted.slice(range.start, range.end)
   const windowIds = sortedIds.slice(range.start, range.end)
   const headerChecked = windowIds.length > 0 && windowIds.every((id) => isSelected(state.selection, id))
+  // Some but not all rows on screen selected — the header checkbox shows a partial tick.
+  const headerIndeterminate =
+    !headerChecked && windowIds.some((id) => isSelected(state.selection, id))
 
   // sorted is filtered rows reordered — it never drops or adds rows, so its
   // length is the current matching count the selection helpers need.
@@ -89,7 +92,7 @@ export function Table({
     <div className={styles.tableArea}>
       {state.phase === 'ready' && (
         <div ref={scrollRef} className={styles.scrollContainer} role="table" onScroll={onScroll}>
-          <div role="rowgroup">
+          <div role="rowgroup" className={styles.headerGroup}>
             <TableHeader
               sorts={state.sorts}
               nameWidth={state.nameWidth}
@@ -97,6 +100,7 @@ export function Table({
               dispatch={dispatch}
               startResize={startResize}
               headerChecked={headerChecked}
+              headerIndeterminate={headerIndeterminate}
               onToggleWindow={() => dispatch({ type: 'selection/toggleWindow', windowIds })}
             />
           </div>

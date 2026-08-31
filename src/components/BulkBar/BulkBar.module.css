@@ -35,66 +35,58 @@
   font-weight: 600;
 }
 
-.selectAllBtn {
-  height: 26px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid var(--dark-border);
-  background: none;
-  color: var(--accent-on-dark);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.selectAllBtn:hover {
-  background: var(--dark-hover);
-}
-
 .divider {
   width: 1px;
   height: 16px;
   background: var(--dark-border);
 }
 
-.crmBtn {
+/* --- Action buttons ---
+ * One shape for all three tiers: same height, radius, padding and font size.
+ * Only fill, border and weight change, so the hierarchy reads as emphasis
+ * rather than as three unrelated controls. */
+.primary,
+.secondary,
+.quiet {
   height: 26px;
   padding: 0 10px;
   border-radius: 6px;
-  border: none;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Tier 1 — the main bulk action. */
+.primary {
+  border: 1px solid var(--accent);
   background: var(--accent);
   color: #fff;
-  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
+}
+.primary:hover {
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
 }
 
-.exportBtn {
-  height: 26px;
-  padding: 0 10px;
-  border-radius: 6px;
+/* Tier 2 — a peer action on the same selection. */
+.secondary {
   border: 1px solid var(--dark-border);
   background: none;
-  color: var(--border-strong);
-  font-size: 12px;
-  cursor: pointer;
+  color: #fff;
+  font-weight: 500;
 }
-
-.exportBtn:hover {
+.secondary:hover {
   background: var(--dark-hover);
 }
 
-.clearBtn {
-  width: 24px;
-  height: 24px;
-  border: none;
+/* Tier 3 — changes what is selected, rather than acting on it. */
+.quiet {
+  border: 1px solid transparent;
   background: none;
-  color: var(--ink-5);
-  cursor: pointer;
-  font-size: 15px;
-  border-radius: 5px;
+  color: var(--accent-on-dark);
+  font-weight: 500;
 }
-
-.clearBtn:hover {
-  color: #fff;
+.quiet:hover {
+  background: var(--dark-hover);
 }

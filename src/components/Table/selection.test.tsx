@@ -66,3 +66,39 @@ describe('header checkbox', () => {
     expect(screen.getByLabelText('Select the rows on screen')).toBeChecked()
   })
 })
+
+describe('header checkbox partial state', () => {
+  const sel = (ids: number[]) => ({
+    selection: { mode: 'ids' as const, ids: new Set(ids), snapCount: 0, anchor: null, dismissKey: null },
+  })
+  const box = () => screen.getByLabelText('Select the rows on screen') as HTMLInputElement
+
+  it('is unchecked and not partial when nothing is selected', () => {
+    setup()
+    expect(box().checked).toBe(false)
+    expect(box().indeterminate).toBe(false)
+  })
+
+  it('shows a partial tick when only some rendered rows are selected', () => {
+    const win = computeWindow({ count: ROWS.length, rowHeight: 32, viewportHeight: 320, scrollTop: 0 })
+    setup(sel(IDS.slice(win.start, win.start + 2)))
+    expect(box().checked).toBe(false)
+    expect(box().indeterminate).toBe(true)
+  })
+
+  it('is fully checked and not partial when every rendered row is selected', () => {
+    const win = computeWindow({ count: ROWS.length, rowHeight: 32, viewportHeight: 320, scrollTop: 0 })
+    setup(sel(IDS.slice(win.start, win.end)))
+    expect(box().checked).toBe(true)
+    expect(box().indeterminate).toBe(false)
+  })
+
+  it('stays unchecked and not partial when only rows outside the window are selected', () => {
+    const win = computeWindow({ count: ROWS.length, rowHeight: 32, viewportHeight: 320, scrollTop: 0 })
+    const outside = IDS.filter((id) => !IDS.slice(win.start, win.end).includes(id))
+    expect(outside.length).toBeGreaterThan(0)
+    setup(sel(outside))
+    expect(box().checked).toBe(false)
+    expect(box().indeterminate).toBe(false)
+  })
+})

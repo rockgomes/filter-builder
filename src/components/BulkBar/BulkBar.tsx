@@ -26,20 +26,24 @@ export function BulkBar({
   return (
     <div className={styles.bar}>
       <span className={styles.count}>{`${formatNumber(count)} selected`}</span>
+      {/* Three tiers, one per role:
+       *  - .primary   filled — the main bulk action
+       *  - .secondary outlined — peer actions on the same selection
+       *  - .quiet     text only — changes the selection rather than acting on it */}
       {showSelectAll ? (
-        <button type="button" className={styles.selectAllBtn} onClick={onSelectAll}>
+        <button type="button" className={styles.quiet} onClick={onSelectAll}>
           {`Select all ${formatNumber(matchingCount)} matching`}
         </button>
       ) : null}
       <div className={styles.divider} />
-      <button type="button" className={styles.crmBtn} onClick={onAddToCrm}>
+      <button type="button" className={styles.primary} onClick={onAddToCrm}>
         Add to CRM
       </button>
-      <button type="button" className={styles.exportBtn} onClick={onExport}>
+      <button type="button" className={styles.secondary} onClick={onExport}>
         Export CSV
       </button>
-      <button type="button" className={styles.clearBtn} onClick={onClear} aria-label="Clear selection">
-        ×
+      <button type="button" className={styles.quiet} onClick={onClear}>
+        Clear
       </button>
     </div>
   )
