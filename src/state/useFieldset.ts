@@ -27,11 +27,17 @@ export function useFieldset() {
     return () => clearTimeout(timer)
   }, [state.phase, state.dataN])
 
+  // Keyed on toastNonce, not state.toast: raising the SAME message again must
+  // still restart the full 2600ms window, but a string that's unchanged
+  // wouldn't re-trigger this effect. toastNonce is bumped on every raise.
   useEffect(() => {
     if (!state.toast) return
     const timer = setTimeout(() => dispatch({ type: 'toast/hide' }), 2600)
     return () => clearTimeout(timer)
-  }, [state.toast])
+    // toastNonce alone is the correct identity — it's bumped on every raise
+    // (unlike state.toast, which is unchanged when the same message repeats).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.toastNonce])
 
   // rowsRef holds the loaded dataset; it only changes on load/success (a dispatch,
   // which re-renders), so reading it here is safe despite the lint rule's generality.

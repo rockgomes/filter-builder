@@ -30,6 +30,11 @@ export interface AppState {
   savingView: boolean
   saveName: string
   toast: string | null
+  /** Bumped on every `toast/show`, even when the message text is unchanged —
+   *  raising the same message twice must restart the 2600ms auto-dismiss
+   *  timer, and a timer effect can only key off something with a fresh
+   *  identity each time (the message string alone doesn't change). */
+  toastNonce: number
 }
 
 export type Action =
@@ -86,6 +91,7 @@ export function initialState(): AppState {
     savingView: false,
     saveName: '',
     toast: null,
+    toastNonce: 0,
   }
 }
 
@@ -155,6 +161,7 @@ export function reducer(state: AppState, action: Action): AppState {
         savingView: false,
         saveName: '',
         toast: `View “${name}” saved`,
+        toastNonce: state.toastNonce + 1,
       }
     }
 
@@ -213,7 +220,7 @@ export function reducer(state: AppState, action: Action): AppState {
       return { ...state, selection: trimToMatching(state.selection, action.filteredIds) }
 
     case 'toast/show':
-      return { ...state, toast: action.message }
+      return { ...state, toast: action.message, toastNonce: state.toastNonce + 1 }
     case 'toast/hide':
       return { ...state, toast: null }
   }

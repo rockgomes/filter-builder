@@ -71,6 +71,35 @@ describe('useFieldset', () => {
     expect(result.current.sorted[0].revenue).toBeGreaterThanOrEqual(result.current.sorted[1].revenue)
   })
 
+  it('restarts the full 2600ms dismiss window when the same message is raised again', () => {
+    const { result } = renderHook(() => useFieldset())
+
+    act(() => {
+      result.current.dispatch({ type: 'toast/show', message: 'Export CSV' })
+    })
+    expect(result.current.state.toast).toBe('Export CSV')
+
+    // Raise the identical message again before the first timer would fire.
+    act(() => {
+      vi.advanceTimersByTime(2500)
+      result.current.dispatch({ type: 'toast/show', message: 'Export CSV' })
+    })
+    expect(result.current.state.toast).toBe('Export CSV')
+
+    // The original timer's deadline (2500ms + 100ms = 2600ms since the first
+    // raise) has now passed. A correctly-restarted timer must NOT have fired.
+    act(() => {
+      vi.advanceTimersByTime(100)
+    })
+    expect(result.current.state.toast).toBe('Export CSV')
+
+    // The rest of the second raise's own 2600ms window.
+    act(() => {
+      vi.advanceTimersByTime(2500)
+    })
+    expect(result.current.state.toast).toBeNull()
+  })
+
   it('cleans up the load timer on unmount without an act/state-update warning', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const { unmount } = renderHook(() => useFieldset())
