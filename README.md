@@ -26,7 +26,7 @@ Repository: https://github.com/rockgomes/filter-builder
 
 ## Live demo
 
-_Deploy pending — URL to be added._
+**https://fieldset-filter-builder.netlify.app**
 
 ## Getting started
 
@@ -55,12 +55,12 @@ in an iframe:
 
 ```html
 <iframe
-  src="<DEPLOY_URL>"
+  src="https://fieldset-filter-builder.netlify.app"
   style="width: 100%; height: 700px; border: 0"
 ></iframe>
 ```
 
-Replace `<DEPLOY_URL>` with the live demo URL above once it is deployed. `netlify.toml`
+The app sizes to its container, so it fills the frame at whatever height you give it. `netlify.toml`
 deliberately omits `X-Frame-Options` for this reason — a blanket `DENY` would break the embed. If
 a Content-Security-Policy is added later it must use `frame-ancestors` with the embedding origin
 allowed, not a blanket frame denial.
