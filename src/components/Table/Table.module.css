@@ -20,14 +20,24 @@
 
 /* --- Header row --- */
 
+/* The sticky element must be the rowgroup, not the row inside it. A sticky child
+ * can only travel within its parent's box, and the header rowgroup is exactly one
+ * row tall — so sticking the row would let it scroll away with its own wrapper.
+ * The `role="rowgroup"` wrapper exists for the accessibility tree; keep the sticky
+ * positioning here on the wrapper if that structure ever changes. */
+.headerGroup {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  width: max-content;
+  min-width: 100%;
+}
+
 .headerRow {
   display: flex;
   width: max-content;
   min-width: 100%;
   height: 34px;
-  position: sticky;
-  top: 0;
-  z-index: 20;
   background: var(--surface-header);
   border-bottom: 1px solid var(--border-strong);
   font-size: 12px;

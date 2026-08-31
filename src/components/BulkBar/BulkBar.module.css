@@ -35,66 +35,66 @@
   font-weight: 600;
 }
 
-.selectAllBtn {
-  height: 26px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid var(--dark-border);
-  background: none;
-  color: var(--accent-on-dark);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.selectAllBtn:hover {
-  background: var(--dark-hover);
-}
-
 .divider {
   width: 1px;
   height: 16px;
   background: var(--dark-border);
 }
 
-.crmBtn {
+/* --- Action buttons ---
+ * One shape for all three tiers: same height, radius, padding and font size.
+ * Only fill, border and weight change, so the hierarchy reads as emphasis
+ * rather than as three unrelated controls. */
+.primary,
+.secondary,
+.quiet {
   height: 26px;
   padding: 0 10px;
   border-radius: 6px;
-  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Tier 1 — the main bulk action. */
+.primary {
+  border: 1px solid var(--accent);
   background: var(--accent);
   color: #fff;
-  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
+}
+.primary:hover {
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
 }
 
-.exportBtn {
-  height: 26px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid var(--dark-border);
+/* Tier 2 — a peer action on the same selection.
+ * --dark-border is 1.72:1 here, so the outline was effectively invisible and the
+ * button did not read as a control. --ink-5 gives 4.90:1 on this surface. */
+.secondary {
+  border: 1px solid var(--ink-5);
   background: none;
-  color: var(--border-strong);
-  font-size: 12px;
-  cursor: pointer;
+  color: #fff;
 }
-
-.exportBtn:hover {
+.secondary:hover {
   background: var(--dark-hover);
 }
 
-.clearBtn {
-  width: 24px;
-  height: 24px;
-  border: none;
+/* Tier 3 — changes what is selected, rather than acting on it. Neutral by default,
+ * so it stays clearly below the two action tiers. */
+.quiet {
+  border: 1px solid transparent;
   background: none;
-  color: var(--ink-5);
-  cursor: pointer;
-  font-size: 15px;
-  border-radius: 5px;
+  color: var(--border-strong);
+}
+.quiet:hover {
+  background: var(--dark-hover);
 }
 
-.clearBtn:hover {
-  color: #fff;
+/* The one accent-worthy tier-3 action: it widens the selection to the full
+ * matching set, which is the bar's most consequential offer. */
+.quietAccent {
+  color: var(--accent-on-dark);
 }
