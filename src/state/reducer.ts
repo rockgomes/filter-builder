@@ -94,6 +94,13 @@ export type Action =
   | { type: 'toast/show'; message: string }
   | { type: 'toast/hide' }
 
+/**
+ * Names longer than this are a mistake rather than a preference. Truncation already
+ * protects the layout — in the Saved views menu a name gets ~145px beside its three
+ * action buttons, about 24 characters — so this is only a sanity bound.
+ */
+export const MAX_VIEW_NAME_LENGTH = 40
+
 export const RAIL_DEFAULT_WIDTH = 500
 export const RAIL_MIN_WIDTH = 300
 export const RAIL_MAX_WIDTH = 680
@@ -317,7 +324,7 @@ export function reducer(state: AppState, action: Action): AppState {
     }
 
     case 'view/rename': {
-      const name = action.name.trim()
+      const name = action.name.trim().slice(0, MAX_VIEW_NAME_LENGTH)
       if (!name) return state
       return {
         ...state,
@@ -339,7 +346,7 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'view/setName':
       return { ...state, saveName: action.name }
     case 'view/confirmSave': {
-      const name = state.saveName.trim() || 'Untitled view'
+      const name = state.saveName.trim().slice(0, MAX_VIEW_NAME_LENGTH) || 'Untitled view'
       const id = `v_${Date.now()}_${state.views.length}`
       // The edits have found a home in the new view, so the view they came from
       // is no longer carrying them.

@@ -252,15 +252,25 @@
   }
 }
 
-/* Orientation line: quiet, tight to the count, and truncating rather than wrapping
- * so a long view name cannot push the whole block down. */
+/* Orientation line: which view, and whether it is saved. Quiet and tight to the
+ * count so it barely moves the block down. */
+.viewRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 3px;
+  min-width: 0;
+}
+
+/* Truncates rather than wrapping, so a long name cannot push the block down or
+ * shove the Unsaved tag off the line. */
 .viewName {
   font-size: 11.5px;
   color: var(--ink-4);
-  margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 /* The header is a different kind of thing from the conditions below it — status and

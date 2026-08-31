@@ -36,10 +36,26 @@ export function MatchCount({
 }: MatchCountProps) {
   return (
     <div className={styles.header}>
-      {/* Which view you are in, above the count. Small, because it is orientation
-        * rather than the headline — and because an unpinned view has no chip, so
-        * without this there is nothing at all saying where you are. */}
-      {activeViewName ? <div className={styles.viewName}>{activeViewName}</div> : null}
+      {/* Which view you are in, and whether it is saved — both facts about the view,
+       * so they sit together on their own line. That leaves the count row for the
+       * count and the one action. */}
+      {activeViewName ? (
+        <div className={styles.viewRow}>
+          <span className={styles.viewName}>{activeViewName}</span>
+          {isDirty ? (
+            <>
+              <span className={styles.unsavedTag}>Unsaved</span>
+              <button
+                type="button"
+                className={styles.discardLink}
+                onClick={() => dispatch({ type: 'view/discard' })}
+              >
+                Discard
+              </button>
+            </>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className={styles.matchRow}>
         <span className={styles.matchCount}>{count}</span>
@@ -48,21 +64,6 @@ export function MatchCount({
         {ignoredCount > 0 ? (
           <span className={styles.ignoredNote}>
             {ignoredCount} condition{ignoredCount === 1 ? '' : 's'} ignored (deleted field)
-          </span>
-        ) : null}
-
-        {/* Discard belongs next to the state it undoes, not in a row of buttons —
-         * it is a way back, not an action you reach for. */}
-        {isDirty ? (
-          <span className={styles.unsavedGroup}>
-            <span className={styles.unsavedTag}>Unsaved</span>
-            <button
-              type="button"
-              className={styles.discardLink}
-              onClick={() => dispatch({ type: 'view/discard' })}
-            >
-              Discard
-            </button>
           </span>
         ) : null}
 

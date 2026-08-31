@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  MAX_VIEW_NAME_LENGTH,
   RAIL_DEFAULT_WIDTH,
   RAIL_MAX_WIDTH,
   RAIL_MIN_WIDTH,
@@ -373,5 +374,26 @@ describe('switching views abandons an in-progress save', () => {
   it('leaves the naming alone when the same view is reselected', () => {
     const before = naming()
     expect(reducer(before, { type: 'view/select', viewId: 'v_icp' })).toBe(before)
+  })
+})
+
+describe('view name length', () => {
+  const long = 'x'.repeat(120)
+
+  it('caps a new view name', () => {
+    const saved = reducer({ ...ready(), savingView: true, saveName: long }, { type: 'view/confirmSave' })
+    expect(saved.views.at(-1)!.name).toHaveLength(MAX_VIEW_NAME_LENGTH)
+  })
+
+  it('caps a rename', () => {
+    const renamed = reducer(ready(), { type: 'view/rename', viewId: 'v_icp', name: long })
+    expect(renamed.views.find((v) => v.id === 'v_icp')!.name).toHaveLength(MAX_VIEW_NAME_LENGTH)
+  })
+
+  // The inputs carry maxLength too, but the reducer is the rule — anything that
+  // dispatches a rename is bound by it, not just the two inputs that happen to exist.
+  it('leaves a name within the limit untouched', () => {
+    const renamed = reducer(ready(), { type: 'view/rename', viewId: 'v_icp', name: 'Mid-market SaaS, EMEA' })
+    expect(renamed.views.find((v) => v.id === 'v_icp')!.name).toBe('Mid-market SaaS, EMEA')
   })
 })

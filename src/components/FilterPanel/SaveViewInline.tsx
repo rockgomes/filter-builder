@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { MAX_VIEW_NAME_LENGTH } from '../../state/reducer'
 import type { Action } from '../../state/reducer'
 import styles from './FilterPanel.module.css'
 
@@ -19,6 +20,7 @@ export function SaveViewInline({ saveName, dispatch }: SaveViewInlineProps) {
       <input
         ref={inputRef}
         aria-label="View name"
+        maxLength={MAX_VIEW_NAME_LENGTH}
         className={styles.saveInput}
         value={saveName}
         placeholder="View name…"

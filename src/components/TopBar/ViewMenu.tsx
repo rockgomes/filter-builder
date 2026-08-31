@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { MAX_VIEW_NAME_LENGTH } from '../../state/reducer'
 import type { Action } from '../../state/reducer'
 import type { SavedView } from '../../domain/types'
 import styles from './ViewMenu.module.css'
@@ -47,6 +48,7 @@ export function ViewMenu({ views, activeView, pendingDelete, onClose, dispatch }
                 autoFocus
                 className={styles.renameInput}
                 aria-label={`Rename ${view.name}`}
+                maxLength={MAX_VIEW_NAME_LENGTH}
                 value={draftName}
                 onChange={(event) => setDraftName(event.target.value)}
                 onKeyDown={(event) => {
@@ -97,7 +99,7 @@ export function ViewMenu({ views, activeView, pendingDelete, onClose, dispatch }
             </button>
 
             {/* The locked view is the way out: it cannot be unpinned, renamed away
-              * or deleted, so it offers none of those. */}
+             * or deleted, so it offers none of those. */}
             {view.locked ? (
               <span className={styles.lockedNote}>always here</span>
             ) : (
