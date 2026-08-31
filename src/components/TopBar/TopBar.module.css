@@ -79,7 +79,7 @@
 }
 
 .chipWarn {
-  color: var(--amber-mark);
+  color: var(--amber-text);
   font-weight: 700;
 }
 
@@ -98,7 +98,7 @@
 .demoLabel {
   font-family: var(--font-mono);
   font-size: 10.5px;
-  color: var(--ink-5);
+  color: var(--ink-4);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }

@@ -126,7 +126,7 @@
 }
 
 .whereLabel {
-  color: var(--ink-5);
+  color: var(--ink-4);
   font-size: 12px;
 }
 
@@ -150,7 +150,7 @@
   text-align: center;
   font-family: var(--font-mono);
   font-size: 10.5px;
-  color: var(--ink-5);
+  color: var(--ink-4);
 }
 
 .joinerBlank {

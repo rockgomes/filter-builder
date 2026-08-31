@@ -31,7 +31,7 @@
 .emptyTile {
   border-radius: 12px;
   border: 1px dashed var(--border-dashed);
-  color: var(--ink-5);
+  color: var(--ink-4);
   font-weight: 400;
 }
 
@@ -48,7 +48,7 @@
 .detail {
   font-family: var(--font-mono);
   font-size: 11.5px;
-  color: var(--ink-5);
+  color: var(--ink-4);
 }
 
 .retryBtn {
@@ -152,5 +152,5 @@
   text-align: center;
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--ink-5);
+  color: var(--ink-4);
 }
