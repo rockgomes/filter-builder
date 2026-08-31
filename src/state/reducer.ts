@@ -37,6 +37,7 @@ export interface AppState {
    */
   drafts: Record<string, Group>
   colMenuOpen: boolean
+  saveMenuOpen: boolean
   savingView: boolean
   saveName: string
   toast: string | null
@@ -73,6 +74,7 @@ export type Action =
   | { type: 'columns/reorder'; from: string; to: string }
   | { type: 'columns/resize'; key: string; width: number }
   | { type: 'columns/setMenuOpen'; open: boolean }
+  | { type: 'saveMenu/set'; open: boolean }
   | { type: 'rail/resize'; width: number }
   | { type: 'hitCounts/toggle' }
   | { type: 'density/set'; density: Density }
@@ -160,6 +162,7 @@ export function initialState(): AppState {
     showHitCounts: readStoredHitCounts(),
     drafts: {},
     colMenuOpen: false,
+    saveMenuOpen: false,
     savingView: false,
     saveName: '',
     toast: null,
@@ -252,6 +255,11 @@ export function reducer(state: AppState, action: Action): AppState {
 
     case 'view/save': {
       if (!state.activeView) return state
+      const target = state.views.find((v) => v.id === state.activeView)
+      // Refused rather than silently applied: saving onto the escape-hatch view
+      // would overwrite the one filter the user can always get back to. The UI
+      // routes them to "save as new" instead.
+      if (!target || target.locked) return state
       const activeView = state.activeView
       const drafts = omitKey(state.drafts, activeView)
       return {
@@ -261,6 +269,7 @@ export function reducer(state: AppState, action: Action): AppState {
         ),
         drafts,
         toast: 'View saved',
+        saveMenuOpen: false,
       }
     }
 
@@ -279,6 +288,7 @@ export function reducer(state: AppState, action: Action): AppState {
     }
 
     case 'view/delete': {
+      if (state.views.find((v) => v.id === action.viewId)?.locked) return state
       const drafts = omitKey(state.drafts, action.viewId)
       const views = state.views.filter((v) => v.id !== action.viewId)
       // The filter itself is untouched: your rows should not change because a
@@ -300,13 +310,15 @@ export function reducer(state: AppState, action: Action): AppState {
       }
     }
 
-    case 'view/togglePin':
+    case 'view/togglePin': {
+      if (state.views.find((v) => v.id === action.viewId)?.locked) return state
       return {
         ...state,
         views: state.views.map((v) => (v.id === action.viewId ? { ...v, pinned: !v.pinned } : v)),
       }
+    }
     case 'view/startSave':
-      return { ...state, savingView: true, saveName: '' }
+      return { ...state, savingView: true, saveName: '', saveMenuOpen: false }
     case 'view/cancelSave':
       return { ...state, savingView: false }
     case 'view/setName':
@@ -361,6 +373,8 @@ export function reducer(state: AppState, action: Action): AppState {
     }
     case 'hitCounts/toggle':
       return { ...state, showHitCounts: !state.showHitCounts }
+    case 'saveMenu/set':
+      return state.saveMenuOpen === action.open ? state : { ...state, saveMenuOpen: action.open }
     case 'columns/setMenuOpen':
       return { ...state, colMenuOpen: action.open }
 

@@ -27,10 +27,18 @@ export function SaveViewInline({ saveName, dispatch }: SaveViewInlineProps) {
           if (event.key === 'Enter') dispatch({ type: 'view/confirmSave' })
         }}
       />
-      <button type="button" className={styles.saveConfirm} onClick={() => dispatch({ type: 'view/confirmSave' })}>
+      <button
+        type="button"
+        className={styles.saveConfirm}
+        onClick={() => dispatch({ type: 'view/confirmSave' })}
+      >
         Save
       </button>
-      <button type="button" className={styles.saveCancel} onClick={() => dispatch({ type: 'view/cancelSave' })}>
+      <button
+        type="button"
+        className={styles.saveCancel}
+        onClick={() => dispatch({ type: 'view/cancelSave' })}
+      >
         Cancel
       </button>
     </div>

@@ -11,20 +11,36 @@ import styles from './App.module.css'
 
 export function App() {
   const {
-    state, dispatch, sorted, sortedIds, filtered, filterKey, range, rowHeight, rows, ignoredCount, now,
+    state,
+    dispatch,
+    sorted,
+    sortedIds,
+    filtered,
+    filterKey,
+    range,
+    rowHeight,
+    rows,
+    ignoredCount,
+    now,
   } = useFieldset()
   const rail = useRailResize(dispatch)
 
   const reconciling = needsReconciliation(state.selection, filtered.length, filterKey)
 
   return (
-    <div className={styles.app} onClick={() => dispatch({ type: 'columns/setMenuOpen', open: false })}>
+    <div
+      className={styles.app}
+      onClick={() => {
+        dispatch({ type: 'columns/setMenuOpen', open: false })
+        dispatch({ type: 'saveMenu/set', open: false })
+      }}
+    >
       <TopBar state={state} dispatch={dispatch} />
 
       {/* Above the rail breakpoint .body is a row: the filter sits in a fixed-width
-        * rail on the left and everything about the table stacks to its right. Below
-        * it, .body is a column and the layout is exactly what it was before. */}
-      <div className={styles.body} style={{ ["--rail-width" as string]: `${state.railWidth}px` }}>
+       * rail on the left and everything about the table stacks to its right. Below
+       * it, .body is a column and the layout is exactly what it was before. */}
+      <div className={styles.body} style={{ ['--rail-width' as string]: `${state.railWidth}px` }}>
         <div className={styles.rail}>
           <FilterPanel
             state={state}

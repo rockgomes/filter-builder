@@ -22,7 +22,14 @@ export interface JoinSlotProps {
  * group's operator; nested inside a group it is a static label, matching
  * the handoff.
  */
-export function JoinSlot({ isFirst, joinerOp, parentId, small, topOffset, dispatch }: JoinSlotProps) {
+export function JoinSlot({
+  isFirst,
+  joinerOp,
+  parentId,
+  small,
+  topOffset,
+  dispatch,
+}: JoinSlotProps) {
   const style = topOffset ? { marginTop: topOffset } : undefined
 
   if (small) {
@@ -66,15 +73,31 @@ export interface ConditionRowProps {
   dispatch: (action: Action) => void
 }
 
-export function ConditionRow({ cond, parentId, isFirst, joinerOp, small, hits, dispatch }: ConditionRowProps) {
+export function ConditionRow({
+  cond,
+  parentId,
+  isFirst,
+  joinerOp,
+  small,
+  hits,
+  dispatch,
+}: ConditionRowProps) {
   const field = getField(cond.field)
   const fieldLabel = field?.label ?? cond.field
   const controlClass = small ? styles.controlSmall : ''
 
   return (
     <div className={styles.row}>
-      <JoinSlot isFirst={isFirst} joinerOp={joinerOp} parentId={parentId} small={small} dispatch={dispatch} />
-      <div className={`${styles.box} ${small ? styles.boxSmall : ''} ${!field ? styles.boxWarn : ''}`.trim()}>
+      <JoinSlot
+        isFirst={isFirst}
+        joinerOp={joinerOp}
+        parentId={parentId}
+        small={small}
+        dispatch={dispatch}
+      />
+      <div
+        className={`${styles.box} ${small ? styles.boxSmall : ''} ${!field ? styles.boxWarn : ''}`.trim()}
+      >
         <select
           aria-label="Field"
           className={`${styles.select} ${controlClass}`.trim()}

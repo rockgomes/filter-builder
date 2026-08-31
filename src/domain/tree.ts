@@ -115,7 +115,7 @@ export function icpTree(): Group {
 
 export function seedViews(): SavedView[] {
   return [
-    { id: 'v_all', name: 'All companies', tree: emptyTree(), pinned: true },
+    { id: 'v_all', name: 'All companies', tree: emptyTree(), pinned: true, locked: true },
     { id: 'v_icp', name: 'ICP · Mid-market SaaS', tree: icpTree(), pinned: true },
     {
       id: 'v_ncrm', name: 'Not in CRM, active', pinned: true,
