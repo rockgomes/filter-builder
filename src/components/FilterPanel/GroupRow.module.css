@@ -30,7 +30,7 @@
 
 .groupLabel {
   font-size: 11px;
-  color: var(--ink-5);
+  color: var(--ink-4);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-family: var(--font-mono);
@@ -62,7 +62,7 @@
   flex: none;
   border: none;
   background: none;
-  color: var(--ink-6);
+  color: var(--ink-4);
   cursor: pointer;
   font-size: 14px;
   border-radius: 5px;

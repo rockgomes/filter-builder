@@ -84,7 +84,7 @@
 }
 
 .and {
-  color: var(--ink-5);
+  color: var(--ink-4);
   font-size: 12px;
 }
 
@@ -97,7 +97,7 @@
 .hits {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--ink-6);
+  color: var(--ink-4);
   padding: 0 2px;
   white-space: nowrap;
 }
@@ -108,7 +108,7 @@
   flex: none;
   border: none;
   background: none;
-  color: var(--ink-6);
+  color: var(--ink-4);
   cursor: pointer;
   font-size: 14px;
   line-height: 1;
