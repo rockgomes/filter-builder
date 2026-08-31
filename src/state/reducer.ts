@@ -30,7 +30,17 @@ export interface AppState {
   railWidth: number
   /** Per-condition hit counts. Off by default — they are diagnostic, not part of the query. */
   showHitCounts: boolean
+  /**
+   * Unsaved edits, per view. A view is a document rather than a snapshot: edit it,
+   * switch away, come back, and the edits are still here. Deliberately not
+   * persisted — a half-finished filter reappearing after a reload is a surprise.
+   */
+  drafts: Record<string, Group>
   colMenuOpen: boolean
+  saveMenuOpen: boolean
+  viewMenuOpen: boolean
+  /** Id of the view a delete confirmation is open for, or null. */
+  pendingDelete: string | null
   savingView: boolean
   saveName: string
   toast: string | null
@@ -56,12 +66,20 @@ export type Action =
   | { type: 'view/cancelSave' }
   | { type: 'view/setName'; name: string }
   | { type: 'view/confirmSave' }
+  | { type: 'view/save' }
+  | { type: 'view/discard' }
+  | { type: 'view/delete'; viewId: string }
+  | { type: 'view/rename'; viewId: string; name: string }
+  | { type: 'view/togglePin'; viewId: string }
   | { type: 'sort/toggle'; key: CompanyKey; append: boolean }
   | { type: 'columns/toggleVisible'; key: string }
   | { type: 'columns/move'; key: string; direction: -1 | 1 }
   | { type: 'columns/reorder'; from: string; to: string }
   | { type: 'columns/resize'; key: string; width: number }
   | { type: 'columns/setMenuOpen'; open: boolean }
+  | { type: 'saveMenu/set'; open: boolean }
+  | { type: 'viewMenu/set'; open: boolean }
+  | { type: 'view/confirmDelete'; viewId: string | null }
   | { type: 'rail/resize'; width: number }
   | { type: 'hitCounts/toggle' }
   | { type: 'density/set'; density: Density }
@@ -75,6 +93,13 @@ export type Action =
   | { type: 'selection/trim'; filteredIds: number[] }
   | { type: 'toast/show'; message: string }
   | { type: 'toast/hide' }
+
+/**
+ * Names longer than this are a mistake rather than a preference. Truncation already
+ * protects the layout — in the Saved views menu a name gets ~145px beside its three
+ * action buttons, about 24 characters — so this is only a sanity bound.
+ */
+export const MAX_VIEW_NAME_LENGTH = 40
 
 export const RAIL_DEFAULT_WIDTH = 500
 export const RAIL_MIN_WIDTH = 300
@@ -147,7 +172,11 @@ export function initialState(): AppState {
     density: 'Compact',
     railWidth: readStoredRailWidth(),
     showHitCounts: readStoredHitCounts(),
+    drafts: {},
     colMenuOpen: false,
+    saveMenuOpen: false,
+    viewMenuOpen: false,
+    pendingDelete: null,
     savingView: false,
     saveName: '',
     toast: null,
@@ -155,14 +184,32 @@ export function initialState(): AppState {
   }
 }
 
-/** Editing the filter always detaches the active view and re-arms reconciliation. */
+/**
+ * Editing the filter keeps the active view selected and records the edit as that
+ * view's draft, so the view reads as "open and unsaved" rather than detaching.
+ * Reconciliation re-arms either way, since the match set has moved.
+ */
 function afterTreeEdit(state: AppState, tree: Group): AppState {
-  return {
+  const next: AppState = {
     ...state,
     tree,
-    activeView: null,
     selection: { ...state.selection, dismissKey: null },
   }
+  if (!state.activeView) return next
+  return { ...next, drafts: { ...state.drafts, [state.activeView]: tree } }
+}
+
+/** Removes one key from a record without the unused-binding that rest-destructuring leaves behind. */
+function omitKey<T>(record: Record<string, T>, key: string): Record<string, T> {
+  if (!(key in record)) return record
+  const next = { ...record }
+  delete next[key]
+  return next
+}
+
+/** A view is dirty when it has a draft — an edit that has not been saved onto it. */
+export function isViewDirty(state: AppState, viewId: string | null = state.activeView): boolean {
+  return viewId !== null && viewId in state.drafts
 }
 
 const MIN_COL_WIDTH = 70
@@ -192,30 +239,123 @@ export function reducer(state: AppState, action: Action): AppState {
       return afterTreeEdit(state, removeNode(state.tree, action.id))
     case 'tree/toggleOp':
       return afterTreeEdit(state, toggleNodeOp(state.tree, action.id))
-    case 'tree/clear':
-      return { ...afterTreeEdit(state, emptyTree()), activeView: 'v_all' }
+    case 'tree/clear': {
+      // Clearing is not an edit of the current view — it moves you to the empty
+      // view. Drafting an empty tree onto whatever you were on would mark that
+      // view dirty for something you did not do to it.
+      const drafts = omitKey(state.drafts, state.activeView ?? '')
+      return {
+        ...state,
+        tree: emptyTree(),
+        activeView: 'v_all',
+        drafts,
+        selection: { ...state.selection, dismissKey: null },
+      }
+    }
 
     case 'view/select': {
       const view = state.views.find((v) => v.id === action.viewId)
       if (!view) return state
+      // Selecting the view you are already on is a no-op, not a discard.
+      if (view.id === state.activeView) return state
+      const draft = state.drafts[view.id]
       return {
         ...state,
-        tree: cloneTree(view.tree),
+        tree: draft ? cloneTree(draft) : cloneTree(view.tree),
         activeView: view.id,
+        // A half-typed name belonged to the view you just left, so it does not
+        // follow you. Same for an open save menu.
+        savingView: false,
+        saveName: '',
+        saveMenuOpen: false,
         selection: { ...state.selection, dismissKey: null },
       }
     }
+
+    case 'view/save': {
+      if (!state.activeView) return state
+      const target = state.views.find((v) => v.id === state.activeView)
+      // Refused rather than silently applied: saving onto the escape-hatch view
+      // would overwrite the one filter the user can always get back to. The UI
+      // routes them to "save as new" instead.
+      if (!target || target.locked) return state
+      const activeView = state.activeView
+      const drafts = omitKey(state.drafts, activeView)
+      return {
+        ...state,
+        views: state.views.map((v) =>
+          v.id === activeView ? { ...v, tree: cloneTree(state.tree), warn: undefined } : v
+        ),
+        drafts,
+        toast: 'View saved',
+        saveMenuOpen: false,
+    viewMenuOpen: false,
+    pendingDelete: null,
+      }
+    }
+
+    case 'view/discard': {
+      if (!state.activeView) return state
+      const activeView = state.activeView
+      const view = state.views.find((v) => v.id === activeView)
+      if (!view) return state
+      const drafts = omitKey(state.drafts, activeView)
+      return {
+        ...state,
+        tree: cloneTree(view.tree),
+        drafts,
+        selection: { ...state.selection, dismissKey: null },
+      }
+    }
+
+    case 'view/delete': {
+      if (state.views.find((v) => v.id === action.viewId)?.locked) return state
+      const drafts = omitKey(state.drafts, action.viewId)
+      const views = state.views.filter((v) => v.id !== action.viewId)
+      // The filter itself is untouched: your rows should not change because a
+      // label went away. Only the association with the view is lost.
+      return {
+        ...state,
+        views,
+        drafts,
+        pendingDelete: null,
+        activeView: state.activeView === action.viewId ? null : state.activeView,
+      }
+    }
+
+    case 'view/rename': {
+      const name = action.name.trim().slice(0, MAX_VIEW_NAME_LENGTH)
+      if (!name) return state
+      return {
+        ...state,
+        views: state.views.map((v) => (v.id === action.viewId ? { ...v, name } : v)),
+      }
+    }
+
+    case 'view/togglePin': {
+      if (state.views.find((v) => v.id === action.viewId)?.locked) return state
+      return {
+        ...state,
+        views: state.views.map((v) => (v.id === action.viewId ? { ...v, pinned: !v.pinned } : v)),
+      }
+    }
     case 'view/startSave':
-      return { ...state, savingView: true, saveName: '' }
+      return { ...state, savingView: true, saveName: '', saveMenuOpen: false }
     case 'view/cancelSave':
       return { ...state, savingView: false }
     case 'view/setName':
       return { ...state, saveName: action.name }
     case 'view/confirmSave': {
-      const name = state.saveName.trim() || 'Untitled view'
+      const name = state.saveName.trim().slice(0, MAX_VIEW_NAME_LENGTH) || 'Untitled view'
       const id = `v_${Date.now()}_${state.views.length}`
+      // The edits have found a home in the new view, so the view they came from
+      // is no longer carrying them.
+      const drafts = omitKey(state.drafts, state.activeView ?? '')
       return {
         ...state,
+        drafts,
+        // Deliberately unpinned: pinning is a choice made in the Saved views menu,
+        // not something saving does on your behalf.
         views: [...state.views, { id, name, tree: cloneTree(state.tree) }],
         activeView: id,
         savingView: false,
@@ -257,6 +397,14 @@ export function reducer(state: AppState, action: Action): AppState {
     }
     case 'hitCounts/toggle':
       return { ...state, showHitCounts: !state.showHitCounts }
+    case 'viewMenu/set':
+      return state.viewMenuOpen === action.open
+        ? state
+        : { ...state, viewMenuOpen: action.open, pendingDelete: null }
+    case 'view/confirmDelete':
+      return { ...state, pendingDelete: action.viewId }
+    case 'saveMenu/set':
+      return state.saveMenuOpen === action.open ? state : { ...state, saveMenuOpen: action.open }
     case 'columns/setMenuOpen':
       return { ...state, colMenuOpen: action.open }
 

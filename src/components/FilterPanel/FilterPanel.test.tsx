@@ -23,14 +23,18 @@ const setup = (over: Partial<AppState> = {}) => {
       filtered={filterRows(ROWS, state.tree, NOW)}
       ignoredCount={0}
       now={NOW}
-    />
+    />,
   )
   return { dispatch, state, user: userEvent.setup() }
 }
 
 const legacyTree = (): Group => ({
-  kind: 'group', id: 'root', op: 'AND',
-  children: [{ kind: 'cond', id: 'c_dead', field: 'region_emea', op: 'is', value: 'EMEA', value2: '' }],
+  kind: 'group',
+  id: 'root',
+  op: 'AND',
+  children: [
+    { kind: 'cond', id: 'c_dead', field: 'region_emea', op: 'is', value: 'EMEA', value2: '' },
+  ],
 })
 
 describe('FilterPanel structure', () => {
@@ -65,7 +69,8 @@ describe('FilterPanel condition editing', () => {
     const id = state.tree.children[0].id
     await user.selectOptions(screen.getAllByLabelText('Field')[0], 'headcount')
     expect(dispatch).toHaveBeenCalledWith({
-      type: 'tree/patchCondition', id,
+      type: 'tree/patchCondition',
+      id,
       patch: { field: 'headcount', op: 'gt', value: '', value2: '' },
     })
   })
@@ -75,14 +80,20 @@ describe('FilterPanel condition editing', () => {
     const id = state.tree.children[0].id
     await user.selectOptions(screen.getAllByLabelText('Operator')[0], 'any_of')
     expect(dispatch).toHaveBeenCalledWith({
-      type: 'tree/patchCondition', id, patch: { op: 'any_of', value: ['SaaS'] },
+      type: 'tree/patchCondition',
+      id,
+      patch: { op: 'any_of', value: ['SaaS'] },
     })
   })
 
   it('shows a second input only for a between range', () => {
     const tree: Group = {
-      kind: 'group', id: 'root', op: 'AND',
-      children: [{ kind: 'cond', id: 'c1', field: 'headcount', op: 'between', value: '10', value2: '20' }],
+      kind: 'group',
+      id: 'root',
+      op: 'AND',
+      children: [
+        { kind: 'cond', id: 'c1', field: 'headcount', op: 'between', value: '10', value2: '20' },
+      ],
     }
     setup({ tree })
     expect(screen.getAllByLabelText(/Value/)).toHaveLength(2)
@@ -90,7 +101,9 @@ describe('FilterPanel condition editing', () => {
 
   it('shows no value input for a boolean condition', () => {
     const tree: Group = {
-      kind: 'group', id: 'root', op: 'AND',
+      kind: 'group',
+      id: 'root',
+      op: 'AND',
       children: [{ kind: 'cond', id: 'c1', field: 'inCRM', op: 'true', value: '', value2: '' }],
     }
     setup({ tree })
@@ -102,8 +115,12 @@ describe('FilterPanel condition editing', () => {
   // revealed by a toggle in the panel footer.
   it('reports a live hit count for each condition once the toggle is on', () => {
     const tree: Group = {
-      kind: 'group', id: 'root', op: 'AND',
-      children: [{ kind: 'cond', id: 'c1', field: 'industry', op: 'is', value: 'SaaS', value2: '' }],
+      kind: 'group',
+      id: 'root',
+      op: 'AND',
+      children: [
+        { kind: 'cond', id: 'c1', field: 'industry', op: 'is', value: 'SaaS', value2: '' },
+      ],
     }
     setup({ tree, showHitCounts: true })
     expect(screen.getByText(/\d+ hits?$/)).toBeInTheDocument()
@@ -111,8 +128,12 @@ describe('FilterPanel condition editing', () => {
 
   it('hides hit counts by default', () => {
     const tree: Group = {
-      kind: 'group', id: 'root', op: 'AND',
-      children: [{ kind: 'cond', id: 'c1', field: 'industry', op: 'is', value: 'SaaS', value2: '' }],
+      kind: 'group',
+      id: 'root',
+      op: 'AND',
+      children: [
+        { kind: 'cond', id: 'c1', field: 'industry', op: 'is', value: 'SaaS', value2: '' },
+      ],
     }
     setup({ tree })
     expect(screen.queryByText(/\d+ hits?$/)).toBeNull()
@@ -148,7 +169,7 @@ describe('FilterPanel deleted field', () => {
         filtered={ROWS}
         ignoredCount={1}
         now={NOW}
-      />
+      />,
     )
     expect(screen.getByText('1 condition ignored (deleted field)')).toBeInTheDocument()
   })
@@ -233,9 +254,9 @@ describe('FilterPanel empty-filter affordances', () => {
     expect(screen.queryByRole('button', { name: 'Clear filters' })).toBeNull()
   })
 
-  it('hides Save as view when the filter is empty', () => {
+  it('hides Save as… when the filter is empty', () => {
     setup(empty)
-    expect(screen.queryByRole('button', { name: 'Save as view' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Save as…' })).toBeNull()
   })
 
   it('hides the hit-count toggle when the filter is empty', () => {
@@ -246,5 +267,113 @@ describe('FilterPanel empty-filter affordances', () => {
   it('still offers the add-condition actions when empty', () => {
     setup(empty)
     expect(screen.getByRole('button', { name: 'Add condition' })).toBeInTheDocument()
+  })
+})
+
+describe('FilterPanel view actions', () => {
+  const dirty = (over: Partial<AppState> = {}) => {
+    const base = { ...initialState(), phase: 'ready' as const }
+    return setup({ ...base, drafts: { v_icp: base.tree }, ...over })
+  }
+
+  it('marks the view as unsaved when it has a draft', () => {
+    dirty()
+    expect(screen.getByText('Unsaved')).toBeInTheDocument()
+  })
+
+  it('shows no unsaved marker on a clean view', () => {
+    setup()
+    expect(screen.queryByText('Unsaved')).toBeNull()
+  })
+
+  // Redesign: Save used to sit there disabled on a clean view. There is nothing to
+  // save, so it is simply absent.
+  it('offers no save control while the view is clean', () => {
+    setup()
+    expect(screen.queryByRole('button', { name: /^Save/ })).toBeNull()
+  })
+
+  it('offers a save control once there are unsaved edits', () => {
+    dirty()
+    expect(screen.getByRole('button', { name: /^Save/ })).toBeInTheDocument()
+  })
+
+  it('opens a menu rather than saving on the first click', async () => {
+    const { dispatch, user } = dirty()
+    await user.click(screen.getByRole('button', { name: /^Save/ }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'saveMenu/set', open: true })
+    expect(dispatch).not.toHaveBeenCalledWith({ type: 'view/save' })
+  })
+
+  it('updates the open view from the menu', async () => {
+    const { dispatch, user } = dirty({ saveMenuOpen: true })
+    await user.click(screen.getByRole('menuitem', { name: /Update/ }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'view/save' })
+  })
+
+  it('names the view the update would overwrite', () => {
+    dirty({ saveMenuOpen: true })
+    expect(screen.getByRole('menuitem', { name: /ICP · Mid-market SaaS/ })).toBeInTheDocument()
+  })
+
+  it('branches to a new view from the menu', async () => {
+    const { dispatch, user } = dirty({ saveMenuOpen: true })
+    await user.click(screen.getByRole('menuitem', { name: /Save as a new view/ }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'view/startSave' })
+  })
+
+  it('offers Discard only when there are unsaved edits', () => {
+    setup()
+    expect(screen.queryByRole('button', { name: 'Discard' })).toBeNull()
+  })
+
+  it('discards unsaved edits', async () => {
+    const { dispatch, user } = dirty()
+    await user.click(screen.getByRole('button', { name: 'Discard' }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'view/discard' })
+  })
+
+  // The escape-hatch view cannot be overwritten, so saving there can only mean
+  // "make a new view" — no menu, straight to naming it. This is the bug that let
+  // building a filter on "All companies" silently overwrite it.
+  it('goes straight to naming a new view on the locked view', async () => {
+    const base = { ...initialState(), phase: 'ready' as const }
+    const { dispatch, user } = setup({
+      ...base,
+      activeView: 'v_all',
+      drafts: { v_all: base.tree },
+    })
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'view/startSave' })
+    expect(dispatch).not.toHaveBeenCalledWith({ type: 'view/save' })
+  })
+
+  it('offers no update menu on the locked view', () => {
+    const base = { ...initialState(), phase: 'ready' as const }
+    setup({ ...base, activeView: 'v_all', drafts: { v_all: base.tree } })
+    expect(screen.getByRole('button', { name: 'Save' })).not.toHaveAttribute('aria-haspopup')
+  })
+})
+
+describe('FilterPanel active view name', () => {
+  it('says which view you are in', () => {
+    setup()
+    expect(screen.getByText('ICP · Mid-market SaaS')).toBeInTheDocument()
+  })
+
+  // An unpinned view has no chip, so this line is the only thing identifying it.
+  it('names an unpinned view too', () => {
+    const base = { ...initialState(), phase: 'ready' as const }
+    setup({
+      ...base,
+      views: [...base.views, { id: 'v_x', name: 'Only in the menu', tree: base.tree }],
+      activeView: 'v_x',
+    })
+    expect(screen.getByText('Only in the menu')).toBeInTheDocument()
+  })
+
+  it('shows nothing when no view is open', () => {
+    setup({ activeView: null })
+    expect(screen.queryByText('ICP · Mid-market SaaS')).toBeNull()
   })
 })

@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { getField } from '../../domain/fields'
 import { conditionHits } from '../../domain/filter'
+import { isViewDirty } from '../../state/reducer'
 import type { Action, AppState } from '../../state/reducer'
 import type { Company, TreeNode } from '../../domain/types'
 import { MatchCount } from './MatchCount'
@@ -45,6 +46,7 @@ export function FilterPanel({
   }, [state.dataVersion, treeSignature, rows, now, state.showHitCounts])
 
   const hasConditions = state.tree.children.length > 0
+  const activeView = state.views.find((v) => v.id === state.activeView)
 
   return (
     <div className={styles.panel}>
@@ -54,7 +56,11 @@ export function FilterPanel({
         ignoredCount={ignoredCount}
         savingView={state.savingView}
         saveName={state.saveName}
+        saveMenuOpen={state.saveMenuOpen}
         hasConditions={hasConditions}
+        activeViewName={activeView?.name ?? null}
+        canUpdateActiveView={activeView !== undefined && !activeView.locked}
+        isDirty={isViewDirty(state)}
         dispatch={dispatch}
       />
       <div className={styles.rows}>
@@ -97,6 +103,19 @@ export function FilterPanel({
           >
             + Group ( OR )
           </button>
+
+          {/* Same family as the add buttons — these all change how many rows there
+           * are — but pushed to the far edge and coloured against them, because
+           * this one removes every row at once. */}
+          {hasConditions ? (
+            <button
+              type="button"
+              className={styles.dangerBtn}
+              onClick={() => dispatch({ type: 'tree/clear' })}
+            >
+              Clear filters
+            </button>
+          ) : null}
         </div>
 
         {/* Lives in the panel rather than a top-bar menu: it only affects what the

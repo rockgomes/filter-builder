@@ -59,3 +59,58 @@ describe('TopBar', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: 'density/set', density: 'Spacious' })
   })
 })
+
+describe('TopBar pinned views', () => {
+  const withUnpinned = () => {
+    const state = { ...initialState(), phase: 'ready' as const }
+    return {
+      ...state,
+      views: [
+        ...state.views,
+        { id: 'v_hidden', name: 'Not pinned', tree: state.tree },
+      ],
+    }
+  }
+
+  it('gives a chip only to pinned views', () => {
+    const dispatch = vi.fn()
+    render(<TopBar state={withUnpinned()} dispatch={dispatch} />)
+    expect(screen.getByRole('button', { name: /All companies/ })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Not pinned' })).toBeNull()
+  })
+
+  it('always offers the Saved views menu, since it is the only route to unpinned views', () => {
+    const dispatch = vi.fn()
+    render(<TopBar state={withUnpinned()} dispatch={dispatch} />)
+    expect(screen.getByRole('button', { name: 'Saved views' })).toBeInTheDocument()
+  })
+
+  it('reflects the menu being open on the button itself', () => {
+    const dispatch = vi.fn()
+    const state = { ...initialState(), phase: 'ready' as const }
+    render(<TopBar state={{ ...state, viewMenuOpen: true }} dispatch={dispatch} />)
+    expect(screen.getByRole('button', { name: 'Saved views' })).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('reflects the columns menu being open on its button', () => {
+    const dispatch = vi.fn()
+    const state = { ...initialState(), phase: 'ready' as const }
+    render(<TopBar state={{ ...state, colMenuOpen: true }} dispatch={dispatch} />)
+    expect(screen.getByRole('button', { name: 'Columns' })).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('marks the active chip when it has unsaved edits', () => {
+    const dispatch = vi.fn()
+    const state = { ...initialState(), phase: 'ready' as const }
+    render(<TopBar state={{ ...state, drafts: { v_icp: state.tree } }} dispatch={dispatch} />)
+    const chip = screen.getByRole('button', { name: /ICP · Mid-market SaaS/ })
+    expect(chip.querySelector('[aria-label="has unsaved changes"]')).not.toBeNull()
+  })
+
+  it('leaves a clean chip unmarked', () => {
+    const dispatch = vi.fn()
+    render(<TopBar state={{ ...initialState(), phase: 'ready' }} dispatch={dispatch} />)
+    const chip = screen.getByRole('button', { name: /ICP · Mid-market SaaS/ })
+    expect(chip.querySelector('[aria-label="has unsaved changes"]')).toBeNull()
+  })
+})

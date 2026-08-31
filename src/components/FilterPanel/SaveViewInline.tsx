@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { MAX_VIEW_NAME_LENGTH } from '../../state/reducer'
 import type { Action } from '../../state/reducer'
 import styles from './FilterPanel.module.css'
 
@@ -19,6 +20,7 @@ export function SaveViewInline({ saveName, dispatch }: SaveViewInlineProps) {
       <input
         ref={inputRef}
         aria-label="View name"
+        maxLength={MAX_VIEW_NAME_LENGTH}
         className={styles.saveInput}
         value={saveName}
         placeholder="View name…"
@@ -27,10 +29,18 @@ export function SaveViewInline({ saveName, dispatch }: SaveViewInlineProps) {
           if (event.key === 'Enter') dispatch({ type: 'view/confirmSave' })
         }}
       />
-      <button type="button" className={styles.saveConfirm} onClick={() => dispatch({ type: 'view/confirmSave' })}>
+      <button
+        type="button"
+        className={styles.saveConfirm}
+        onClick={() => dispatch({ type: 'view/confirmSave' })}
+      >
         Save
       </button>
-      <button type="button" className={styles.saveCancel} onClick={() => dispatch({ type: 'view/cancelSave' })}>
+      <button
+        type="button"
+        className={styles.saveCancel}
+        onClick={() => dispatch({ type: 'view/cancelSave' })}
+      >
         Cancel
       </button>
     </div>

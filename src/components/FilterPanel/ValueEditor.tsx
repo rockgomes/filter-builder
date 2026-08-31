@@ -22,8 +22,10 @@ const NO_VALUE_OPS = new Set(['empty', 'last30', 'last90'])
 export function ValueEditor({ cond, field, dispatch, small }: ValueEditorProps) {
   if (field.type === 'boolean' || NO_VALUE_OPS.has(cond.op)) return null
 
-  const setValue = (value: string) => dispatch({ type: 'tree/patchCondition', id: cond.id, patch: { value } })
-  const setValue2 = (value2: string) => dispatch({ type: 'tree/patchCondition', id: cond.id, patch: { value2 } })
+  const setValue = (value: string) =>
+    dispatch({ type: 'tree/patchCondition', id: cond.id, patch: { value } })
+  const setValue2 = (value2: string) =>
+    dispatch({ type: 'tree/patchCondition', id: cond.id, patch: { value2 } })
   const controlClass = small ? styles.controlSmall : ''
 
   if (field.type === 'text') {
@@ -91,7 +93,9 @@ export function ValueEditor({ cond, field, dispatch, small }: ValueEditorProps) 
       selected={selected}
       small={small}
       onToggle={(option) => {
-        const next = selected.includes(option) ? selected.filter((v) => v !== option) : [...selected, option]
+        const next = selected.includes(option)
+          ? selected.filter((v) => v !== option)
+          : [...selected, option]
         dispatch({ type: 'tree/patchCondition', id: cond.id, patch: { value: next } })
       }}
     />

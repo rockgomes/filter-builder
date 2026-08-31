@@ -13,7 +13,15 @@ export interface GroupRowProps {
   dispatch: (action: Action) => void
 }
 
-export function GroupRow({ group, parentId, isFirst, joinerOp, small, hitCounts, dispatch }: GroupRowProps) {
+export function GroupRow({
+  group,
+  parentId,
+  isFirst,
+  joinerOp,
+  small,
+  hitCounts,
+  dispatch,
+}: GroupRowProps) {
   const opLabel = group.op === 'AND' ? 'ALL ( AND )' : 'ANY ( OR )'
 
   return (
@@ -70,7 +78,7 @@ export function GroupRow({ group, parentId, isFirst, joinerOp, small, hitCounts,
                 hitCounts={hitCounts}
                 dispatch={dispatch}
               />
-            )
+            ),
           )}
         </div>
         <button

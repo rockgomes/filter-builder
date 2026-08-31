@@ -1,0 +1,121 @@
+/* Follows ColumnsMenu rather than inventing a second dropdown language. */
+.menu {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: 320px;
+  max-height: 380px;
+  overflow-y: auto;
+  background: var(--surface-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-menu);
+  padding: 6px;
+  z-index: 100;
+}
+
+.header {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-4);
+  padding: 6px 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border-radius: var(--radius-control);
+}
+
+.row:hover {
+  background: var(--surface-page);
+}
+
+.rowConfirm {
+  background: var(--error-bg);
+}
+
+.confirmText {
+  flex: 1;
+  font-size: 12.5px;
+  color: var(--error-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The name is the primary target — the row actions sit to its right and stay quiet
+ * until you go looking for them. */
+.name {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 3px 2px;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--ink-1);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nameActive {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.rowBtn {
+  border: none;
+  background: none;
+  padding: 3px 6px;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 11.5px;
+  color: var(--ink-4);
+  cursor: pointer;
+  white-space: nowrap;
+  flex: none;
+}
+
+.rowBtn:hover {
+  background: var(--accent-tint-1);
+  color: var(--accent);
+}
+
+.dangerBtn {
+  composes: rowBtn;
+  color: var(--error-text);
+  font-weight: 600;
+}
+
+.dangerBtn:hover {
+  background: var(--error-text);
+  color: var(--surface-panel);
+}
+
+.lockedNote {
+  font-size: 11px;
+  color: var(--ink-4);
+  font-style: italic;
+  flex: none;
+}
+
+.renameInput {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-control);
+  background: var(--surface-input);
+  padding: 0 8px;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--ink-1);
+}

@@ -54,6 +54,13 @@ export interface SortSpec {
 }
 
 export interface SavedView {
+  /** Pinned views render as chips in the top bar; the rest live in the dropdown. */
+  pinned?: boolean
+  /**
+   * The user's way out. A locked view cannot be updated, deleted or unpinned —
+   * saving onto it would quietly destroy the one filter they can always get back to.
+   */
+  locked?: boolean
   id: string
   name: string
   tree: Group
