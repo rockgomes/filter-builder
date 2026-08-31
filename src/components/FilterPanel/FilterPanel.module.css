@@ -179,3 +179,36 @@
 .hitsToggle:hover {
   color: var(--ink-3);
 }
+
+/* --- Narrow filter column -------------------------------------------------
+ * The leading 44px slot holding "Where" and the AND/OR pills costs 51px with its
+ * gap. That is affordable when the column is wide and not when it is narrow, so
+ * below the threshold the slot stops being a column and the joiner becomes a pill
+ * sitting above its row instead.
+ *
+ * 484px is where the arithmetic flips, measured on a deployed build rather than
+ * estimated: the condition box renders at 400px, the slot and its 8px gap take 52,
+ * and the panel adds 32 of padding. Below that the slot layout wraps, so the pill
+ * layout takes over. */
+@container filterrail (max-width: 483px) {
+  .leadSlot {
+    width: auto;
+    text-align: left;
+  }
+
+  .joinerPill {
+    width: auto;
+    min-width: 40px;
+    height: 22px;
+    padding: 0 9px;
+  }
+
+  .joinerStatic,
+  .joinerBlank {
+    width: auto;
+  }
+
+  .joinerBlank {
+    display: none;
+  }
+}

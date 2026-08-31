@@ -76,7 +76,7 @@ export type Action =
   | { type: 'toast/show'; message: string }
   | { type: 'toast/hide' }
 
-export const RAIL_DEFAULT_WIDTH = 450
+export const RAIL_DEFAULT_WIDTH = 500
 export const RAIL_MIN_WIDTH = 300
 export const RAIL_MAX_WIDTH = 680
 const RAIL_STORAGE_KEY = 'fieldset.railWidth'

@@ -96,3 +96,12 @@
 .addCondBtn:hover {
   background: var(--accent-tint-3);
 }
+
+/* Groups sit in the same leading-slot layout as conditions and stack with them. */
+@container filterrail (max-width: 483px) {
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}

@@ -40,15 +40,20 @@
   }
 
   .rail {
-    /* Measured, not guessed: with hit counts hidden a condition box is 400px and
-     * the panel adds 16px padding each side, so 432 is the requirement and 450
-     * leaves modest slack. Turning hit counts on adds ~70px per row, which wraps
-     * the count to a second line unless the rail is dragged wider — acceptable,
-     * since that toggle is opt-in and the wrap is legible.
-     * NOTE: until Phase 3 moves the AND/OR joiner out of its 44px side slot,
-     * that slot plus its gap eats 51px and conditions still wrap at this width.
+    /* A container, not a media query: the rail's width is dragged, so the panel
+     * has to respond to its own size rather than the viewport's. */
+    container-type: inline-size;
+    container-name: filterrail;
+    /* Measured, not guessed: a condition box renders at 400px. With the leading
+     * slot it needs 484; without it (pill layout) 432. Turning hit counts on adds
+     * ~70px per row, which wraps the count to a second line unless the rail is
+     * dragged wider — acceptable, since that toggle is opt-in and the wrap is
+     * legible.
+     * 500 is the default so the wide layout — leading slot for "Where" and the
+     * AND/OR pills — fits without wrapping, which needs 484. Drag below 484 and a
+     * container query swaps the slot for a pill above each row instead.
      * The real value comes from state; this default only applies before hydration. */
-    width: var(--rail-width, 450px);
+    width: var(--rail-width, 500px);
     overflow-y: auto;
     background: var(--surface-panel);
     border-right: 1px solid var(--border-strong);

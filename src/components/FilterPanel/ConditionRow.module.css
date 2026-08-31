@@ -167,3 +167,13 @@
 .selectOperator {
   color: var(--ink-4);
 }
+
+/* Stack the joiner above its condition once the column is too narrow to spare a
+ * 44px column for it. See FilterPanel.module.css for the threshold arithmetic. */
+@container filterrail (max-width: 483px) {
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
