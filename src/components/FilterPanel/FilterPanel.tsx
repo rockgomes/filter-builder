@@ -81,7 +81,7 @@ export function FilterPanel({
             />
           ),
         )}
-        <div className={styles.footer}>
+        <div className={`${styles.footer} ${hasConditions ? '' : styles.footerFlush}`.trim()}>
           <button
             type="button"
             className={styles.dashedBtn}

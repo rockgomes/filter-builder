@@ -93,11 +93,29 @@
   gap: 7px;
 }
 
+/* The footer lines up with the left edge of the condition boxes, not the panel.
+ * In the slot layout the boxes start 52px in — past the 44px joiner slot and its
+ * 8px gap — so the footer matches. The indent is applied only when there is a
+ * slot column to account for: see .footerFlush below. */
 .footer {
   display: flex;
   gap: 6px;
   margin-left: 52px;
   flex-wrap: wrap;
+}
+
+/* No slot column, so nothing to indent past: the pill layout, and any layout with
+ * no conditions at all. Both put the boxes (or nothing) at the panel's edge. */
+.footerFlush,
+.footerFlush + .hitsToggle {
+  margin-left: 0;
+}
+
+@container filterrail (max-width: 483px) {
+  .footer,
+  .footer + .hitsToggle {
+    margin-left: 0;
+  }
 }
 
 .dashedBtn {
@@ -164,6 +182,8 @@
   align-items: center;
   gap: 7px;
   margin-top: 12px;
+  /* Shares the footer's left edge so the bottom of the panel reads as one column. */
+  margin-left: 52px;
   font-size: 12px;
   color: var(--ink-4);
   cursor: pointer;
