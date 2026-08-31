@@ -1,0 +1,16 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Deliberately absent: X-Frame-Options. The app is meant to be embeddable in an iframe from the
+# portfolio site, and a blanket DENY would silently break that. If a CSP is added later it must
+# use frame-ancestors with the portfolio origin allowed.

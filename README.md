@@ -16,9 +16,17 @@ ports that design handoff into a production React + TypeScript codebase.
 3. **"Select the rows on screen" is not "select all matching."** The header checkbox and the bulk
    action bar keep these two very different operations distinct, on tables of up to 50,000 rows.
 
-See `docs/superpowers/specs/2026-08-30-filter-builder-design.md` for the full design spec, and
+See `docs/superpowers/specs/2026-08-30-filter-builder-design.md` for the full design spec,
+`docs/superpowers/plans/2026-08-30-filter-builder.md` for the implementation plan, and
 `design_handoff_fieldset/` for the original high-fidelity design reference (colors, typography,
-spacing, and interactions there are final — this app recreates them pixel-for-pixel).
+spacing, and interactions there are final — this app recreates them pixel-for-pixel). The project
+was built test-first from these committed documents; 183 tests currently pass across the suite.
+
+Repository: https://github.com/rockgomes/filter-builder
+
+## Live demo
+
+_Deploy pending — URL to be added._
 
 ## Getting started
 
@@ -43,4 +51,25 @@ npm run dev
 ## Embedding
 
 The app root sizes to `height: 100%` of its container rather than `100vh`, so it is safe to embed
-in an iframe.
+in an iframe:
+
+```html
+<iframe
+  src="<DEPLOY_URL>"
+  style="width: 100%; height: 700px; border: 0"
+></iframe>
+```
+
+Replace `<DEPLOY_URL>` with the live demo URL above once it is deployed. `netlify.toml`
+deliberately omits `X-Frame-Options` for this reason — a blanket `DENY` would break the embed. If
+a Content-Security-Policy is added later it must use `frame-ancestors` with the embedding origin
+allowed, not a blanket frame denial.
+
+## Accessibility
+
+Known, deliberate gap: the design handoff's `--ink-5` token (`#8b96ad`) does not meet WCAG AA for
+small text. It measures roughly 2.82:1 against the status bar background and 2.97:1 against white,
+short of the 4.5:1 requirement for normal-weight body text. The token is left unchanged here
+because the color palette is fixed by the design handoff (`design_handoff_fieldset/`); adjusting
+it is a pending decision for the project owner, not something this implementation should decide
+unilaterally.
