@@ -35,6 +35,7 @@ export function App() {
         dispatch({ type: 'columns/setMenuOpen', open: false })
         dispatch({ type: 'saveMenu/set', open: false })
         dispatch({ type: 'viewMenu/set', open: false })
+        dispatch({ type: 'confirm/set', target: null })
       }}
     >
       <TopBar state={state} dispatch={dispatch} />

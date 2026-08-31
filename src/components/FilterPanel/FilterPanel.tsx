@@ -1,12 +1,14 @@
 import { useMemo } from 'react'
 import { getField } from '../../domain/fields'
 import { conditionHits } from '../../domain/filter'
+import { countConditions } from '../../domain/tree'
 import { isViewDirty } from '../../state/reducer'
 import type { Action, AppState } from '../../state/reducer'
 import type { Company, TreeNode } from '../../domain/types'
 import { MatchCount } from './MatchCount'
 import { ConditionRow } from './ConditionRow'
 import { GroupRow } from './GroupRow'
+import { ConfirmPopover } from './ConfirmPopover'
 import styles from './FilterPanel.module.css'
 
 export interface FilterPanelProps {
@@ -46,6 +48,12 @@ export function FilterPanel({
   }, [state.dataVersion, treeSignature, rows, now, state.showHitCounts])
 
   const hasConditions = state.tree.children.length > 0
+  // "Remove everything" is easier to weigh when you are told how much everything is.
+  const conditionCount = countConditions(state.tree)
+  const clearQuestion =
+    conditionCount === 1
+      ? 'Remove the only condition? This cannot be undone.'
+      : `Remove all ${conditionCount} conditions? This cannot be undone.`
   const activeView = state.views.find((v) => v.id === state.activeView)
 
   return (
@@ -58,6 +66,7 @@ export function FilterPanel({
         hasConditions={hasConditions}
         activeViewName={activeView?.name ?? null}
         canUpdateActiveView={activeView !== undefined && !activeView.locked}
+        pendingConfirm={state.pendingConfirm}
         isDirty={isViewDirty(state)}
         dispatch={dispatch}
       />
@@ -103,16 +112,37 @@ export function FilterPanel({
           </button>
 
           {/* Same family as the add buttons — these all change how many rows there
-           * are — but pushed to the far edge and coloured against them, because
-           * this one removes every row at once. */}
+           * are — and coloured against them, because this one removes every row at
+           * once. It asks before doing it: there is no undo, and it now sits one
+           * small gap from a button people press repeatedly. */}
           {hasConditions ? (
-            <button
-              type="button"
-              className={styles.dangerBtn}
-              onClick={() => dispatch({ type: 'tree/clear' })}
-            >
-              Clear filters
-            </button>
+            <span className={styles.confirmAnchor}>
+              <button
+                type="button"
+                className={styles.dangerBtn}
+                aria-haspopup="dialog"
+                aria-expanded={state.pendingConfirm === 'clear'}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  dispatch({
+                    type: 'confirm/set',
+                    target: state.pendingConfirm === 'clear' ? null : 'clear',
+                  })
+                }}
+              >
+                Clear filters
+              </button>
+
+              {state.pendingConfirm === 'clear' ? (
+                <ConfirmPopover
+                  question={clearQuestion}
+                  confirmLabel="Clear all"
+                  align="right"
+                  onConfirm={() => dispatch({ type: 'tree/clear' })}
+                  onCancel={() => dispatch({ type: 'confirm/set', target: null })}
+                />
+              ) : null}
+            </span>
           ) : null}
         </div>
 

@@ -33,21 +33,19 @@
   font-size: 12.5px;
 }
 
-.spacer {
-  flex: 1;
-}
-
+/* Sized to match the Unsaved tag it sits beside: two chips of different heights on
+ * one short line read as a mistake rather than a hierarchy. */
 .saveBtn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 28px;
-  padding: 0 11px;
-  border-radius: 7px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 6px;
   border: 1px solid var(--accent-border-soft);
   background: var(--accent-tint-2);
   color: var(--accent);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -68,6 +66,9 @@
   gap: 6px;
   margin-left: 52px;
   flex-wrap: wrap;
+  /* Fallback anchor for the clear confirmation once the column is too narrow for it
+   * to hang off the button. See .confirmAnchor. */
+  position: relative;
 }
 
 /* No slot column, so nothing to indent past: the pill layout, and any layout with
@@ -103,12 +104,13 @@
 }
 
 /* Same button as the add actions — composed rather than copied, so height, padding,
- * radius and the faded border cannot drift apart again. Only the text colour and
- * the far-right position differ: the faded border is what makes these read as one
- * family, and a full-strength red border pulled far too much attention. */
+ * radius and the faded border cannot drift apart again. Only the text colour differs:
+ * the faded border is what makes these read as one family, and a full-strength red
+ * border pulled far too much attention. It sits in the row on equal terms, one gap
+ * from its neighbours rather than flung to an edge that moves when the column is
+ * resized. */
 .dangerBtn {
   composes: dashedBtn;
-  margin-left: auto;
   color: var(--error-text);
 }
 
@@ -220,11 +222,27 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  /* Applies only once the actions have wrapped below the name. */
+  row-gap: 5px;
+  flex-wrap: wrap;
   margin-bottom: 3px;
   min-width: 0;
-  /* The Unsaved tag is taller than the name alone, so without a floor the whole
-   * block drops 6px the moment you touch a filter. Held at the tag's height. */
-  min-height: 20px;
+  /* The actions are taller than the name alone, so without a floor the whole block
+   * drops the moment you touch a filter. Held at the actions' height. */
+  min-height: 24px;
+  /* Same fallback role as .footer, for the discard confirmation. */
+  position: relative;
+}
+
+/* One unit, so Unsaved, Save and Discard never separate across lines: Save would be
+ * stranded from the state it acts on. Wrapping is left to flex rather than a
+ * breakpoint, so it happens exactly when the two cannot share a line, at whatever
+ * length the view's name happens to be. */
+.viewActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
 }
 
 /* Truncates rather than wrapping, so a long name cannot push the block down or
@@ -251,6 +269,21 @@
   gap: 7px;
 }
 
+/* Positioning context for the confirmation that hangs off the control inside it, so
+ * the question appears at the button that raised it rather than at the start of the
+ * row. Below the narrow threshold it stops being one, handing the job back to the
+ * row, which is the only anchor a 300px column has room for. */
+.confirmAnchor {
+  position: relative;
+  display: inline-flex;
+}
+
+@container filterrail (max-width: 483px) {
+  .confirmAnchor {
+    position: static;
+  }
+}
+
 .discardLink {
   border: none;
   background: none;
@@ -273,7 +306,7 @@
 .saveMenu {
   position: absolute;
   top: calc(100% + 5px);
-  right: 0;
+  left: 0;
   min-width: 200px;
   background: var(--surface-panel);
   border: 1px solid var(--border-strong);
@@ -312,7 +345,10 @@
   background: var(--amber-bg);
   border: 1px solid var(--amber-border);
   border-radius: 5px;
-  padding: 2px 7px;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 7px;
 }
 
 /* One quiet style shared by Save as…, Discard and Clear filters. Only Save is

@@ -81,6 +81,7 @@ const PAIRINGS: Pairing[] = [
   { what: 'save-as-view button', fg: token('accent'), bg: token('accent-tint-2') },
   { what: '"In CRM" badge', fg: token('crm-text'), bg: token('crm-bg') },
   { what: 'error state text', fg: token('error-text'), bg: token('error-bg') },
+  { what: 'destructive confirm button', fg: '#ffffff', bg: token('error-text') },
   { what: 'deleted-field condition text', fg: token('amber-text'), bg: token('amber-bg') },
   { what: 'reconciliation banner text', fg: token('amber-text-deep'), bg: token('amber-bg-strip') },
   { what: 'reconciliation banner tag', fg: token('amber-text-deep'), bg: token('amber-bg-tag') },
