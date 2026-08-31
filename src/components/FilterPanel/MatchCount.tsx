@@ -1,14 +1,11 @@
 import type { Action } from '../../state/reducer'
 import { SaveMenu } from './SaveMenu'
-import { SaveViewInline } from './SaveViewInline'
 import styles from './FilterPanel.module.css'
 
 export interface MatchCountProps {
   count: number
   total: number
   ignoredCount: number
-  savingView: boolean
-  saveName: string
   saveMenuOpen: boolean
   /** False when the filter is empty: there is nothing to save. */
   hasConditions: boolean
@@ -25,8 +22,6 @@ export function MatchCount({
   count,
   total,
   ignoredCount,
-  savingView,
-  saveName,
   saveMenuOpen,
   hasConditions,
   activeViewName,
@@ -69,8 +64,10 @@ export function MatchCount({
 
         <div className={styles.spacer} />
 
-        {/* Saving is only offered when there is something unsaved to save. */}
-        {hasConditions && isDirty && !savingView ? (
+        {/* Saving is only offered when there is something unsaved to save. The
+         * button stays in place while the dialog is open — it is what the dialog
+         * came from, so moving it would break the thread. */}
+        {hasConditions && isDirty ? (
           <SaveMenu
             canUpdate={canUpdateActiveView}
             viewName={activeViewName}
@@ -79,8 +76,6 @@ export function MatchCount({
           />
         ) : null}
       </div>
-
-      {savingView ? <SaveViewInline saveName={saveName} dispatch={dispatch} /> : null}
     </div>
   )
 }

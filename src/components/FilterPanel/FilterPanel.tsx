@@ -54,8 +54,6 @@ export function FilterPanel({
         count={filtered.length}
         total={rows.length}
         ignoredCount={ignoredCount}
-        savingView={state.savingView}
-        saveName={state.saveName}
         saveMenuOpen={state.saveMenuOpen}
         hasConditions={hasConditions}
         activeViewName={activeView?.name ?? null}

@@ -94,6 +94,22 @@ describe('view selection', () => {
     expect(s.savingView).toBe(false)
   })
 
+  it('leaves a new view out of the top bar unless asked', () => {
+    const s = reducer({ ...ready(), savingView: true, saveName: 'Q' }, { type: 'view/confirmSave' })
+    expect(s.views.at(-1)!.pinned).toBe(false)
+  })
+
+  it('pins the new view when the dialog asked for it', () => {
+    const naming = { ...ready(), savingView: true, saveName: 'Loud' }
+    const asked = reducer(naming, { type: 'view/setSavePinned', pinned: true })
+    expect(reducer(asked, { type: 'view/confirmSave' }).views.at(-1)!.pinned).toBe(true)
+  })
+
+  it('does not carry the pin choice into the next save', () => {
+    const s = reducer({ ...ready(), savePinned: true }, { type: 'view/startSave' })
+    expect(s.savePinned).toBe(false)
+  })
+
   it('falls back to Untitled view for a blank name', () => {
     const s = reducer({ ...ready(), savingView: true, saveName: '   ' }, { type: 'view/confirmSave' })
     expect(s.views.at(-1)!.name).toBe('Untitled view')
