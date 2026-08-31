@@ -36,6 +36,11 @@ export function MatchCount({
 }: MatchCountProps) {
   return (
     <div className={styles.header}>
+      {/* Which view you are in, above the count. Small, because it is orientation
+        * rather than the headline — and because an unpinned view has no chip, so
+        * without this there is nothing at all saying where you are. */}
+      {activeViewName ? <div className={styles.viewName}>{activeViewName}</div> : null}
+
       <div className={styles.matchRow}>
         <span className={styles.matchCount}>{count}</span>
         <span className={styles.matchLabel}>of {total} match</span>

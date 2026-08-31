@@ -354,3 +354,26 @@ describe('FilterPanel view actions', () => {
     expect(screen.getByRole('button', { name: 'Save' })).not.toHaveAttribute('aria-haspopup')
   })
 })
+
+describe('FilterPanel active view name', () => {
+  it('says which view you are in', () => {
+    setup()
+    expect(screen.getByText('ICP · Mid-market SaaS')).toBeInTheDocument()
+  })
+
+  // An unpinned view has no chip, so this line is the only thing identifying it.
+  it('names an unpinned view too', () => {
+    const base = { ...initialState(), phase: 'ready' as const }
+    setup({
+      ...base,
+      views: [...base.views, { id: 'v_x', name: 'Only in the menu', tree: base.tree }],
+      activeView: 'v_x',
+    })
+    expect(screen.getByText('Only in the menu')).toBeInTheDocument()
+  })
+
+  it('shows nothing when no view is open', () => {
+    setup({ activeView: null })
+    expect(screen.queryByText('ICP · Mid-market SaaS')).toBeNull()
+  })
+})

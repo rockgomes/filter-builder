@@ -256,6 +256,11 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         tree: draft ? cloneTree(draft) : cloneTree(view.tree),
         activeView: view.id,
+        // A half-typed name belonged to the view you just left, so it does not
+        // follow you. Same for an open save menu.
+        savingView: false,
+        saveName: '',
+        saveMenuOpen: false,
         selection: { ...state.selection, dismissKey: null },
       }
     }
@@ -342,7 +347,9 @@ export function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         drafts,
-        views: [...state.views, { id, name, tree: cloneTree(state.tree), pinned: true }],
+        // Deliberately unpinned: pinning is a choice made in the Saved views menu,
+        // not something saving does on your behalf.
+        views: [...state.views, { id, name, tree: cloneTree(state.tree) }],
         activeView: id,
         savingView: false,
         saveName: '',

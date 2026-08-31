@@ -344,8 +344,34 @@ describe('deleting, renaming and pinning views', () => {
     expect(on.views.find((v) => v.id === 'v_icp')!.pinned).toBe(true)
   })
 
-  it('a newly saved view is pinned', () => {
+  // Pinning is a deliberate act in the Saved views menu, not a side effect of
+  // saving. A new view goes to the menu and stays there until you pin it.
+  it('a newly saved view is not pinned', () => {
     const saved = reducer({ ...ready(), savingView: true, saveName: 'New' }, { type: 'view/confirmSave' })
-    expect(saved.views.at(-1)!.pinned).toBe(true)
+    expect(saved.views.at(-1)!.pinned).toBeFalsy()
+  })
+})
+
+describe('switching views abandons an in-progress save', () => {
+  const naming = () => ({ ...ready(), savingView: true, saveName: 'Half typed', saveMenuOpen: true })
+
+  it('closes the naming input', () => {
+    const switched = reducer(naming(), { type: 'view/select', viewId: 'v_ncrm' })
+    expect(switched.savingView).toBe(false)
+  })
+
+  it('drops the half-typed name rather than carrying it to the next view', () => {
+    const switched = reducer(naming(), { type: 'view/select', viewId: 'v_ncrm' })
+    expect(switched.saveName).toBe('')
+  })
+
+  it('closes the save menu too', () => {
+    const switched = reducer(naming(), { type: 'view/select', viewId: 'v_ncrm' })
+    expect(switched.saveMenuOpen).toBe(false)
+  })
+
+  it('leaves the naming alone when the same view is reselected', () => {
+    const before = naming()
+    expect(reducer(before, { type: 'view/select', viewId: 'v_icp' })).toBe(before)
   })
 })
