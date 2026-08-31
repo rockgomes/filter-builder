@@ -65,6 +65,15 @@ deliberately omits `X-Frame-Options` for this reason — a blanket `DENY` would 
 a Content-Security-Policy is added later it must use `frame-ancestors` with the embedding origin
 allowed, not a blanket frame denial.
 
+## Deploys
+
+`main` deploys itself. The Netlify project is connected to this repository, so a merge triggers a
+build (`npm run build`, publishing `dist`) and publishes it to production. Pull requests get their
+own deploy preview.
+
+Nothing needs to be run by hand. If a change is merged and the live site does not change, check the
+build log first, not your local `netlify deploy`.
+
 ## Accessibility
 
 Known, deliberate gap: the design handoff's `--ink-5` token (`#8b96ad`) does not meet WCAG AA for
