@@ -83,7 +83,7 @@ export function GroupRow({
         </div>
         <button
           type="button"
-          className={styles.addCondBtn}
+          className={`${styles.addCondBtn} ${group.children.length ? '' : styles.addCondFlush}`.trim()}
           onClick={() => dispatch({ type: 'tree/addCondition', parentId: group.id })}
           aria-label="Add condition to this group"
         >
