@@ -58,6 +58,10 @@ const PAIRINGS: Pairing[] = [
   { what: 'status bar meta', fg: token('ink-4'), bg: token('surface-header') },
   { what: 'CRM "—" badge', fg: token('ink-3'), bg: token('border-row') },
   { what: 'condition hit counts and × buttons', fg: token('ink-4'), bg: '#fdfdfe' },
+  // Field and value selects sit at --ink-1, matching the table's own text; only the
+  // operator select is a step lighter. Both are asserted against the input surface.
+  { what: 'field and value select text', fg: token('ink-1'), bg: token('surface-input') },
+  { what: 'operator select text', fg: token('ink-4'), bg: token('surface-input') },
   { what: 'group meta and × buttons', fg: token('ink-4'), bg: token('surface-group') },
   { what: 'Where / demo label / columns menu', fg: token('ink-4'), bg: token('surface-panel') },
   { what: 'deleted-field warning glyph', fg: token('amber-text'), bg: token('surface-panel') },

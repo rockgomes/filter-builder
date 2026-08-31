@@ -48,7 +48,6 @@
 .select {
   background: var(--surface-panel);
   padding: 0 4px;
-  color: var(--ink-4);
 }
 
 /* Fieldset.dc.html:198 — nested/small selects use a tighter radius, padding
@@ -155,4 +154,11 @@
   height: 22px;
   padding: 0 8px;
   font-size: 11.5px;
+}
+
+/* Fieldset.dc.html:198 — the operator select is deliberately one step lighter than
+ * the field and value selects, which sit at --ink-1 like the table's own text.
+ * That hierarchy was lost when a single rule painted every select --ink-4. */
+.selectOperator {
+  color: var(--ink-4);
 }

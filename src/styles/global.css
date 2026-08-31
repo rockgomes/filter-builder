@@ -8,7 +8,9 @@ body { min-height: 100dvh; }
 body {
   font-family: var(--font-ui);
   color: var(--ink-1);
-  -webkit-font-smoothing: antialiased;
+  /* Deliberately NOT antialiased. The design handoff sets no font-smoothing, and
+   * `-webkit-font-smoothing: antialiased` renders text thinner and lighter on
+   * macOS, which visibly cancelled out the contrast work. Leave it to the OS. */
 }
 
 a { color: var(--accent); }

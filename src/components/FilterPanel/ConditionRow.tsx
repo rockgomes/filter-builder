@@ -101,7 +101,7 @@ export function ConditionRow({ cond, parentId, isFirst, joinerOp, small, hits, d
           <>
             <select
               aria-label="Operator"
-              className={`${styles.select} ${controlClass}`.trim()}
+              className={`${styles.select} ${styles.selectOperator} ${controlClass}`.trim()}
               value={cond.op}
               onChange={(event) =>
                 dispatch({
