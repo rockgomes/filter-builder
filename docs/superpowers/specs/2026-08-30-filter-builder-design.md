@@ -155,9 +155,9 @@ Transitions:
 |---|---|
 | Row toggle while in `all` | Snapshot materializes into explicit ids, then the toggle applies; mode becomes `ids` |
 | Shift-click row | Range from the last anchor to the clicked index; the **target row's new state** is applied across the whole range |
-| Header checkbox | Toggles **only the currently rendered window rows**; never the full matching set |
+| Header control | A menu, not a checkbox. Offers "Select the first 50", "Select all N matching", and "Deselect all N" when a selection exists. See defect 6 |
 | "Select all N matching" | Offered only when a partial selection exists in `ids` mode; enters `all` mode |
-| Filter changes while in `all` and `filteredCount !== snapCount` | Reconciliation banner appears; bulk bar hides until resolved |
+| Filter changes while in `all` and **any selected row no longer matches** | Reconciliation banner appears; bulk bar hides until resolved. See defect 5 |
 | Banner "Keep all N" | Dismissal recorded against the current filter signature; re-arms if the filter changes again |
 | Banner "Trim to M matching" | Snapshot intersected with current matches; drops to `ids` mode |
 | Banner "Clear selection" | Selection emptied |
@@ -176,6 +176,29 @@ Logic only. No visual consequence.
 4. Per-condition hit counts scan the entire dataset on every render, unmemoized — at 50k rows
    times N conditions this is the port's one real performance hazard. Memoized on
    `(dataVersion, condition signature)`.
+
+### Defects found after implementation
+
+These were specified wrongly above and corrected later, against a running build. The
+text above has been updated; they are recorded here so the change is not silent.
+
+5. **The reconciliation trigger was arithmetic, not membership.** This spec said the
+   banner appears when `filteredCount !== snapCount`. That is the wrong question, and
+   wrong in both directions. Loosening a filter adds rows without removing any, so the
+   count moves while the selection is untouched: the banner appeared offering "keep
+   206" or "trim to 206", two buttons that did the same nothing. Worse, a filter that
+   swaps rows out for the same number of different ones leaves the count identical, so
+   rows the user had selected silently stopped matching and nothing was raised. The
+   trigger is now `stillMatchingCount(selection, filteredIds) < snapCount`.
+
+6. **The header checkbox asked an invisible question.** It selected the rendered
+   virtual window, which includes overscan rows below the fold, so the count it acted
+   on was one nobody could see or predict. The gesture, meanwhile, reads universally
+   as "select everything". It also toggled, so the same click added or removed
+   depending on state the tick did not distinguish. It is now a menu button that
+   states each amount and makes the user pick one. `toggleWindow` is removed rather
+   than left unreachable. This keeps the distinction in reason-to-exist 3 while making
+   it legible: the bounded batch is a stated number instead of "whatever is rendered".
 
 ## 9. Accessibility additions
 

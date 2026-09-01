@@ -57,15 +57,17 @@ export function toggleRow(sel: SelectionState, input: ToggleRowInput): Selection
   return { mode: 'ids', ids, snapCount: 0, anchor: index, dismissKey: null }
 }
 
-export function toggleWindow(sel: SelectionState, windowIds: number[]): SelectionState {
-  if (!windowIds.length) return sel
-  const ids = new Set(sel.ids)
-  const allSelected = windowIds.every((id) => ids.has(id))
-  for (const id of windowIds) {
-    if (allSelected) ids.delete(id)
-    else ids.add(id)
-  }
-  return { ...sel, mode: 'ids', ids, snapCount: 0, dismissKey: null }
+/**
+ * Adds rows to the selection, never removes. It backs a menu item that says
+ * "select", and a menu item that sometimes deselects instead would be a trap. This
+ * replaced toggleWindow, whose toggle was invisible: the same click added or removed
+ * depending on state you could not see.
+ */
+export function selectFirst(sel: SelectionState, ids: number[]): SelectionState {
+  if (!ids.length) return sel
+  const next = new Set(sel.ids)
+  for (const id of ids) next.add(id)
+  return { ...sel, mode: 'ids', ids: next, snapCount: 0, dismissKey: null }
 }
 
 export function selectAllMatching(sel: SelectionState, matchingIds: number[]): SelectionState {
@@ -82,23 +84,36 @@ export function canSelectAllMatching(sel: SelectionState, filteredCount: number)
   return sel.mode === 'ids' && sel.ids.size > 0 && sel.ids.size < filteredCount
 }
 
-export function needsReconciliation(
-  sel: SelectionState,
-  filteredCount: number,
-  filterKey: string
-): boolean {
-  return (
-    sel.mode === 'all' &&
-    sel.snapCount > 0 &&
-    filteredCount !== sel.snapCount &&
-    sel.dismissKey !== filterKey
-  )
-}
-
 export function stillMatchingCount(sel: SelectionState, filteredIds: number[]): number {
   let count = 0
   for (const id of filteredIds) if (sel.ids.has(id)) count++
   return count
+}
+
+/**
+ * Whether the user has to be asked what to do with a selection the filter moved
+ * under.
+ *
+ * The question is whether any of THEIR rows stopped matching, not whether the match
+ * count moved. Those are different, in both directions:
+ *
+ * - Loosening a filter adds rows without taking any away. The count changes, the
+ *   selection is untouched, and there is nothing to decide. Asking anyway produced a
+ *   banner offering "keep 206" or "trim to 206", two buttons that did the same
+ *   nothing.
+ * - A filter can also swap rows out for others and land on the same count. Rows the
+ *   user selected are gone, and a count comparison sees nothing at all.
+ *
+ * So the trigger is membership, not arithmetic.
+ */
+export function needsReconciliation(
+  sel: SelectionState,
+  filteredIds: number[],
+  filterKey: string
+): boolean {
+  if (sel.mode !== 'all' || sel.snapCount === 0) return false
+  if (sel.dismissKey === filterKey) return false
+  return stillMatchingCount(sel, filteredIds) < sel.snapCount
 }
 
 export function keepAll(sel: SelectionState, filterKey: string): SelectionState {

@@ -27,7 +27,7 @@ describe('load lifecycle', () => {
 
   it('clears the selection and scroll position when a new dataset is requested', () => {
     const before = ready({ scrollTop: 900 })
-    const withSel = reducer(before, { type: 'selection/toggleWindow', windowIds: [1, 2] })
+    const withSel = reducer(before, { type: 'selection/selectFirst', ids: [1, 2] })
     const s = reducer(withSel, { type: 'load/start', dataN: 50000 })
     expect(selectedCount(s.selection)).toBe(0)
     expect(s.scrollTop).toBe(0)

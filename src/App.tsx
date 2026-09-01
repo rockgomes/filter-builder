@@ -26,7 +26,7 @@ export function App() {
   } = useFieldset()
   const rail = useRailResize(dispatch)
 
-  const reconciling = needsReconciliation(state.selection, filtered.length, filterKey)
+  const reconciling = needsReconciliation(state.selection, sortedIds, filterKey)
 
   return (
     <div
@@ -36,6 +36,7 @@ export function App() {
         dispatch({ type: 'saveMenu/set', open: false })
         dispatch({ type: 'viewMenu/set', open: false })
         dispatch({ type: 'confirm/set', target: null })
+        dispatch({ type: 'selMenu/set', open: false })
       }}
     >
       <TopBar state={state} dispatch={dispatch} />
