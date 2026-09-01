@@ -1,0 +1,75 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--radius-control);
+}
+
+/* Matches the row checkboxes exactly: this reports the same kind of state they do,
+ * so looking different would imply it means something else. */
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--ink-4);
+  border-radius: 3px;
+  background: var(--surface-panel);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.boxAll,
+.boxSome {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.trigger:hover .box {
+  border-color: var(--accent);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  min-width: 190px;
+  background: var(--surface-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-menu);
+  padding: 5px;
+}
+
+.item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 7px 9px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--ink-1);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.item:hover {
+  background: var(--surface-page);
+}

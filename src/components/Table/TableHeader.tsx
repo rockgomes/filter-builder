@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react'
 import type { DragEvent, MouseEvent } from 'react'
 import type { Action } from '../../state/reducer'
 import type { ColumnDef, CompanyKey, SortSpec } from '../../domain/types'
+import { SelectionMenu } from './SelectionMenu'
 import styles from './Table.module.css'
 
 export interface TableHeaderProps {
@@ -10,12 +10,10 @@ export interface TableHeaderProps {
   columns: ColumnDef[]
   dispatch: (action: Action) => void
   startResize: (key: string, event: MouseEvent<HTMLDivElement>) => void
-  /** True only when every row in the currently rendered window is selected. */
-  headerChecked: boolean
-  /** True when some — but not all — rendered rows are selected. Shows a partial tick. */
-  headerIndeterminate: boolean
-  /** Toggles selection of just the rendered window — never the full matching set. */
-  onToggleWindow: () => void
+  selectedCount: number
+  matchingCount: number
+  matchingIds: number[]
+  selMenuOpen: boolean
 }
 
 interface SortDisplay {
@@ -42,17 +40,11 @@ export function TableHeader({
   columns,
   dispatch,
   startResize,
-  headerChecked,
-  headerIndeterminate,
-  onToggleWindow,
+  selectedCount,
+  matchingCount,
+  matchingIds,
+  selMenuOpen,
 }: TableHeaderProps) {
-  // `indeterminate` is a DOM property, not an attribute — React cannot set it
-  // declaratively, so it has to be written to the node after each render.
-  const selectAllRef = useRef<HTMLInputElement>(null)
-  useEffect(() => {
-    if (selectAllRef.current) selectAllRef.current.indeterminate = headerIndeterminate
-  }, [headerIndeterminate])
-
   const nameSort = sortDisplay(sorts, 'name')
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>, key: string) => {
@@ -69,16 +61,14 @@ export function TableHeader({
   return (
     <div role="row" className={styles.headerRow}>
       <div role="columnheader" className={styles.checkboxHeaderCell}>
-        {/* Selects only the rows currently rendered in the virtual window — a
-         *  distinct promise from "Select all N matching" in the bulk bar, so
-         *  the accessible name must say so explicitly. */}
-        <input
-          ref={selectAllRef}
-          type="checkbox"
-          className={styles.checkbox}
-          checked={headerChecked}
-          onChange={onToggleWindow}
-          aria-label="Select the rows on screen"
+        {/* A menu rather than a checkbox. The amounts on offer are far apart and the
+         *  gesture is ambiguous, so it states them instead of picking one. */}
+        <SelectionMenu
+          selectedCount={selectedCount}
+          matchingCount={matchingCount}
+          matchingIds={matchingIds}
+          open={selMenuOpen}
+          dispatch={dispatch}
         />
       </div>
 

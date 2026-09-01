@@ -75,13 +75,6 @@ export function Table({
   )
 
   const windowRows = sorted.slice(range.start, range.end)
-  const windowIds = sortedIds.slice(range.start, range.end)
-  const headerChecked = windowIds.length > 0 && windowIds.every((id) => isSelected(state.selection, id))
-  // A partial tick means "you have a selection that this box does not fully cover".
-  // Deliberately NOT scoped to the rendered window: scrolling away from a selected
-  // row must not clear the indicator while the selection is still live. The tick
-  // (headerChecked) stays window-scoped, because that is what clicking the box acts on.
-  const headerIndeterminate = !headerChecked && selectedCount(state.selection) > 0
 
   // sorted is filtered rows reordered — it never drops or adds rows, so its
   // length is the current matching count the selection helpers need.
@@ -101,9 +94,10 @@ export function Table({
               columns={columns}
               dispatch={dispatch}
               startResize={startResize}
-              headerChecked={headerChecked}
-              headerIndeterminate={headerIndeterminate}
-              onToggleWindow={() => dispatch({ type: 'selection/toggleWindow', windowIds })}
+              selectedCount={selCount}
+              matchingCount={matchingCount}
+              matchingIds={sortedIds}
+              selMenuOpen={state.selMenuOpen}
             />
           </div>
 

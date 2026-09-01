@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   canSelectAllMatching, clearSelection, emptySelection, isSelected, keepAll,
   needsReconciliation, selectAllMatching, selectedCount, stillMatchingCount,
-  toggleRow, toggleWindow, trimToMatching,
+  selectFirst, toggleRow, trimToMatching,
 } from './selection'
 import type { SelectionState } from './selection'
 
@@ -89,30 +89,28 @@ describe('toggleRow — materializing an all-mode selection', () => {
   })
 })
 
-describe('toggleWindow — the header checkbox', () => {
-  it('selects every rendered row when not all are selected', () => {
-    const sel = toggleWindow(withIds([10]), [10, 11, 12])
+describe('selectFirst — the header menu\'s batch option', () => {
+  it('adds the batch to whatever is already selected', () => {
+    const sel = selectFirst(withIds([99]), [10, 11, 12])
+    expect([...sel.ids].sort((a, b) => a - b)).toEqual([10, 11, 12, 99])
+  })
+
+  // toggleWindow, which this replaced, removed the rows when they were all already
+  // selected. Same click, opposite effect, decided by state you could not see. A menu
+  // item that says "select" only ever selects.
+  it('never removes, even when every one is already selected', () => {
+    const sel = selectFirst(withIds([10, 11, 12]), [10, 11, 12])
     expect([...sel.ids].sort((a, b) => a - b)).toEqual([10, 11, 12])
   })
 
-  it('deselects every rendered row when all are already selected', () => {
-    const sel = toggleWindow(withIds([10, 11, 12, 99]), [10, 11, 12])
-    expect([...sel.ids]).toEqual([99])
-  })
-
-  it('never touches rows outside the rendered window', () => {
-    const sel = toggleWindow(withIds([99]), [10, 11])
-    expect(sel.ids.has(99)).toBe(true)
-  })
-
   it('materializes an all-mode selection into ids mode', () => {
-    const sel = toggleWindow(inAllMode([10, 11], 2), [12])
+    const sel = selectFirst(inAllMode([10, 11], 2), [12])
     expect(sel.mode).toBe('ids')
     expect([...sel.ids].sort((a, b) => a - b)).toEqual([10, 11, 12])
   })
 
-  it('does nothing to an empty window', () => {
-    const sel = toggleWindow(withIds([10]), [])
+  it('does nothing when handed no rows', () => {
+    const sel = selectFirst(withIds([10]), [])
     expect([...sel.ids]).toEqual([10])
   })
 })
@@ -145,26 +143,41 @@ describe('canSelectAllMatching', () => {
 })
 
 describe('needsReconciliation', () => {
+  const SEL = [10, 11, 12]
+
   it('is false in ids mode however the filter changes', () => {
-    expect(needsReconciliation(withIds([10]), 3, 'f2')).toBe(false)
+    expect(needsReconciliation(withIds([10]), [10, 20, 30], 'f2')).toBe(false)
   })
 
-  it('is false while the match count still equals the snapshot count', () => {
-    expect(needsReconciliation(inAllMode([10, 11, 12], 3), 3, 'f1')).toBe(false)
+  it('is false while every selected row still matches', () => {
+    expect(needsReconciliation(inAllMode(SEL, 3), [10, 11, 12], 'f1')).toBe(false)
   })
 
-  it('is true once the match count diverges from the snapshot', () => {
-    expect(needsReconciliation(inAllMode([10, 11, 12], 3), 2, 'f2')).toBe(true)
+  it('is true once a selected row stops matching', () => {
+    expect(needsReconciliation(inAllMode(SEL, 3), [10, 11], 'f2')).toBe(true)
+  })
+
+  // The bug this replaced: the trigger compared the match count to the snapshot
+  // count, so loosening a filter raised a banner offering "keep 206" or "trim to
+  // 206" — two buttons that did the same nothing.
+  it('stays silent when the filter only widens', () => {
+    expect(needsReconciliation(inAllMode(SEL, 3), [10, 11, 12, 13, 14], 'f2')).toBe(false)
+  })
+
+  // The other half of the same bug, and the dangerous half: a count comparison sees
+  // nothing when the filter swaps rows out for the same number of different ones.
+  it('catches a swap that leaves the count unchanged', () => {
+    expect(needsReconciliation(inAllMode(SEL, 3), [10, 11, 99], 'f2')).toBe(true)
   })
 
   it('is suppressed for the filter signature the user chose to keep', () => {
-    const kept = keepAll(inAllMode([10, 11, 12], 3), 'f2')
-    expect(needsReconciliation(kept, 2, 'f2')).toBe(false)
+    const kept = keepAll(inAllMode(SEL, 3), 'f2')
+    expect(needsReconciliation(kept, [10, 11], 'f2')).toBe(false)
   })
 
   it('re-arms when the filter changes again after a keep', () => {
-    const kept = keepAll(inAllMode([10, 11, 12], 3), 'f2')
-    expect(needsReconciliation(kept, 1, 'f3')).toBe(true)
+    const kept = keepAll(inAllMode(SEL, 3), 'f2')
+    expect(needsReconciliation(kept, [10], 'f3')).toBe(true)
   })
 })
 

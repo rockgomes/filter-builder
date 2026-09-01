@@ -4,8 +4,8 @@ import {
   removeNode, seedViews, toggleNodeOp,
 } from '../domain/tree'
 import {
-  clearSelection, emptySelection, keepAll, selectAllMatching, toggleRow,
-  toggleWindow, trimToMatching, type SelectionState,
+  clearSelection, emptySelection, keepAll, selectAllMatching, selectFirst, toggleRow,
+  trimToMatching, type SelectionState,
 } from '../domain/selection'
 import { toggleSort } from '../domain/sort'
 import type { Cond, CompanyKey, Density, Group, Phase, SavedView, SortSpec } from '../domain/types'
@@ -38,6 +38,8 @@ export interface AppState {
   drafts: Record<string, Group>
   colMenuOpen: boolean
   saveMenuOpen: boolean
+  /** The header's selection menu. */
+  selMenuOpen: boolean
   viewMenuOpen: boolean
   /** Id of the view a delete confirmation is open for, or null. */
   pendingDelete: string | null
@@ -97,8 +99,9 @@ export type Action =
   | { type: 'scroll/set'; scrollTop: number }
   | { type: 'viewport/set'; height: number }
   | { type: 'selection/toggleRow'; id: number; index: number; shiftKey: boolean; sortedIds: number[] }
-  | { type: 'selection/toggleWindow'; windowIds: number[] }
   | { type: 'selection/selectAllMatching'; matchingIds: number[] }
+  | { type: 'selection/selectFirst'; ids: number[] }
+  | { type: 'selMenu/set'; open: boolean }
   | { type: 'selection/clear' }
   | { type: 'selection/keep'; filterKey: string }
   | { type: 'selection/trim'; filteredIds: number[] }
@@ -186,6 +189,7 @@ export function initialState(): AppState {
     drafts: {},
     colMenuOpen: false,
     saveMenuOpen: false,
+    selMenuOpen: false,
     viewMenuOpen: false,
     pendingDelete: null,
     pendingConfirm: null,
@@ -224,6 +228,10 @@ function omitKey<T>(record: Record<string, T>, key: string): Record<string, T> {
 export function isViewDirty(state: AppState, viewId: string | null = state.activeView): boolean {
   return viewId !== null && viewId in state.drafts
 }
+
+/** How many rows the header menu's batch option takes. Small enough to read as a
+ *  deliberate sample rather than a stand-in for "everything". */
+export const SELECT_BATCH = 50
 
 const MIN_COL_WIDTH = 70
 
@@ -445,12 +453,24 @@ export function reducer(state: AppState, action: Action): AppState {
           id: action.id, index: action.index, shiftKey: action.shiftKey, sortedIds: action.sortedIds,
         }),
       }
-    case 'selection/toggleWindow':
-      return { ...state, selection: toggleWindow(state.selection, action.windowIds) }
+    case 'selection/selectFirst':
+      return {
+        ...state,
+        selection: selectFirst(state.selection, action.ids),
+        selMenuOpen: false,
+      }
+    case 'selMenu/set':
+      return state.selMenuOpen === action.open ? state : { ...state, selMenuOpen: action.open }
+    // Both of these are reachable from the header menu, so both close it. Doing it
+    // here rather than in the menu items means a third caller cannot forget.
     case 'selection/selectAllMatching':
-      return { ...state, selection: selectAllMatching(state.selection, action.matchingIds) }
+      return {
+        ...state,
+        selection: selectAllMatching(state.selection, action.matchingIds),
+        selMenuOpen: false,
+      }
     case 'selection/clear':
-      return { ...state, selection: clearSelection() }
+      return { ...state, selection: clearSelection(), selMenuOpen: false }
     case 'selection/keep':
       return { ...state, selection: keepAll(state.selection, action.filterKey) }
     case 'selection/trim':
